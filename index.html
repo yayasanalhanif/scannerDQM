@@ -62,10 +62,24 @@
             statusDiv.className = `alert mt-3 d-block ${isBerhasil ? 'alert-success' : 'alert-danger'}`;
             
             if(isBerhasil) {
-                // Tambahkan ke tabel riwayat (Format: "BERHASIL: Nama - Kelas hadir")
-                const nama = txt.split(":")[1].split("-")[0].trim();
-                const waktu = new Date().toLocaleTimeString('id-ID');
-                historyBody.innerHTML = `<tr><td>${nama}</td><td>${waktu}</td></tr>` + historyBody.innerHTML;
+                // 1. Ambil Nama (asumsi format respon: BERHASIL: Nama - Kelas)
+                const bagianRespon = txt.split(":")[1].trim(); 
+                const nama = bagianRespon.split("-")[0].trim();
+                
+                // 2. Ambil Waktu
+                const waktu = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                // 3. Tambahkan ke tabel (ID diambil dari decodedText/nomor yang di-scan)
+                const barisBaru = `
+                    <tr>
+                        <td>
+                            <div class="fw-bold">${nama}</div>
+                            <small class="text-muted">ID: ${decodedText}</small>
+                        </td>
+                        <td class="text-end">${waktu}</td>
+                    </tr>`;
+                
+                historyBody.innerHTML = barisBaru + historyBody.innerHTML;
             }
         });
     }

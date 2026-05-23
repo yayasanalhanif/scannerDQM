@@ -1,36 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-</head>
-<body class="bg-gray-100 p-4">
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
-    <h1 class="text-xl font-bold text-center mb-4">Absensi Peserta</h1>
-    
-    <!-- Area Scanner -->
-    <div id="reader" class="w-full rounded-lg overflow-hidden"></div>
-    
-    <div id="result" class="mt-4 p-3 rounded text-center font-medium"></div>
-  </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi QR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .card { border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        #reader { 
+            width: 100%; max-width: 400px; margin: 0 auto; 
+            border-radius: 15px; overflow: hidden; background: #000;
+            border: 3px solid #0d6efd; position: relative;
+        }
 
-  <script>
+        /* Animasi garis scanning */
+        #reader::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: rgba(255, 0, 0, 0.7); box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.5);
+            animation: scan 2s linear infinite; z-index: 10; display: none;
+        }
+        @keyframes scan { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+        #reader.scanning::after { display: block; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="card p-4 mx-auto" style="max-width: 500px;">
+        <h4 class="text-center fw-bold text-primary mb-3">Absensi Scanner</h4>
+        
+        <input type="text" id="petugas" class="form-control mb-2" placeholder="Nama Petugas">
+        <input type="email" id="emailPetugas" class="form-control mb-3" placeholder="Email Petugas">
+
+        <div id="reader"></div>
+        
+        <button id="start-btn" class="btn btn-primary w-100 mt-3 p-3 fw-bold">AKTIFKAN KAMERA</button>
+        <div id="status" class="alert mt-3 d-none text-center fw-bold"></div>
+    </div>
+</div>
+
+<!-- Audio Feedback -->
+<audio id="beepSuccess" src="https://juangjaya.id/smaitah/sukses.mp3" preload="auto"></audio>
+<audio id="beepError" src="https://juangjaya.id/smaitah/gagal.mp3" preload="auto"></audio>
+
+<script>
+    // Ganti dengan URL Web App Anda yang baru
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec"; 
+    const html5QrCode = new Html5Qrcode("reader");
+    const statusDiv = document.getElementById('status');
+    const sndSuccess = document.getElementById('beepSuccess');
+    const sndError = document.getElementById('beepError');
+
     function onScanSuccess(decodedText) {
-      document.getElementById('result').innerText = "Memproses...";
-      document.getElementById('result').className = "mt-4 p-3 rounded text-center bg-blue-100 text-blue-800";
-      
-      // Kirim ke Apps Script
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('result').innerText = res;
-          document.getElementById('result').className = "mt-4 p-3 rounded text-center bg-green-500 text-white";
+        const petugas = document.getElementById('petugas').value;
+        const email = document.getElementById('emailPetugas').value;
+
+        if(!petugas || !email) { alert("Lengkapi data petugas!"); return; }
+
+        html5QrCode.pause();
+        document.getElementById('reader').classList.remove('scanning');
+        statusDiv.innerText = "⏳ Memproses...";
+        statusDiv.className = "alert mt-3 d-block alert-info";
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ nomor: decodedText, petugas: petugas, emailPetugas: email })
         })
-        .logPresence(decodedText);
+        .then(res => res.text())
+        .then(txt => {
+            const isBerhasil = txt.toUpperCase().includes("BERHASIL");
+            isBerhasil ? sndSuccess.play() : sndError.play();
+
+            statusDiv.innerHTML = `<div>${txt}</div>
+                                  <button class="btn btn-dark w-100 mt-2" onclick="resumeScanner()">OKE - LANJUT</button>`;
+            statusDiv.className = `alert mt-3 d-block ${isBerhasil ? 'alert-success' : 'alert-danger'}`;
+        });
     }
 
-    let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} });
-    html5QrcodeScanner.render(onScanSuccess);
-  </script>
+    function resumeScanner() {
+        statusDiv.className = "alert mt-3 d-none";
+        document.getElementById('reader').classList.add('scanning');
+        html5QrCode.resume();
+    }
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('start-btn').classList.add('d-none');
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess)
+        .then(() => document.getElementById('reader').classList.add('scanning'));
+    });
+</script>
 </body>
 </html>

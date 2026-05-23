@@ -32,8 +32,7 @@
         <h4 class="text-center fw-bold text-primary mb-3">Absensi Scanner</h4>
         
         <input type="text" id="petugas" class="form-control mb-2" placeholder="Nama Petugas">
-        <input type="email" id="emailPetugas" class="form-control mb-3" placeholder="Email Petugas">
-
+   
         <div id="reader"></div>
         
         <button id="start-btn" class="btn btn-primary w-100 mt-3 p-3 fw-bold">AKTIFKAN KAMERA</button>
@@ -55,9 +54,8 @@
 
     function onScanSuccess(decodedText) {
         const petugas = document.getElementById('petugas').value;
-        const email = document.getElementById('emailPetugas').value;
-
-        if(!petugas || !email) { alert("Lengkapi data petugas!"); return; }
+    
+        if(!petugas) { alert("Lengkapi nama petugas!"); return; }
 
         html5QrCode.pause();
         document.getElementById('reader').classList.remove('scanning');
@@ -66,7 +64,7 @@
 
         fetch(WEB_APP_URL, {
             method: "POST",
-            body: JSON.stringify({ nomor: decodedText, petugas: petugas, emailPetugas: email })
+            body: JSON.stringify({ nomor: decodedText, petugas: petugas })
         })
         .then(res => res.text())
         .then(txt => {

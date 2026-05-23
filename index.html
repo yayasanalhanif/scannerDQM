@@ -1,11 +1,36 @@
-<script src="https://unpkg.com/html5-qrcode"></script>
-<div id="reader" style="width: 500px;"></div>
-<script>
-  function onScanSuccess(decodedText, decodedResult) {
-    // Kirim ID ke Apps Script
-    google.script.run.withSuccessHandler(alert)
-      .logPresence(decodedText); 
-  }
-  let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-  html5QrcodeScanner.render(onScanSuccess);
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+    <h1 class="text-xl font-bold text-center mb-4">Absensi Peserta</h1>
+    
+    <!-- Area Scanner -->
+    <div id="reader" class="w-full rounded-lg overflow-hidden"></div>
+    
+    <div id="result" class="mt-4 p-3 rounded text-center font-medium"></div>
+  </div>
+
+  <script>
+    function onScanSuccess(decodedText) {
+      document.getElementById('result').innerText = "Memproses...";
+      document.getElementById('result').className = "mt-4 p-3 rounded text-center bg-blue-100 text-blue-800";
+      
+      // Kirim ke Apps Script
+      google.script.run
+        .withSuccessHandler(res => {
+          document.getElementById('result').innerText = res;
+          document.getElementById('result').className = "mt-4 p-3 rounded text-center bg-green-500 text-white";
+        })
+        .logPresence(decodedText);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} });
+    html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>

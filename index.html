@@ -9,7 +9,26 @@
     <style>
         body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
         .card { border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        #reader { width: 100%; max-width: 400px; margin: 0 auto; border-radius: 15px; overflow: hidden; background: #000; border: 3px solid #0d6efd; position: relative; }
+        
+        /* FIX: Menambahkan display block dan memaksa ukuran */
+        #reader { 
+            width: 100% !important; 
+            max-width: 500px !important; 
+            margin: 0 auto; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            background: #000; 
+            border: 3px solid #0d6efd; 
+            position: relative; 
+            min-height: 300px; /* Menjaga agar div tidak menciut */
+            display: block !important;
+        }
+
+        #reader video {
+            width: 100% !important;
+            height: auto !important;
+        }
+
         #reader::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: rgba(255, 0, 0, 0.7); animation: scan 2s linear infinite; z-index: 10; display: none; }
         @keyframes scan { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
         #reader.scanning::after { display: block; }
@@ -49,7 +68,7 @@
     function playSound(isSuccess) {
         const audio = isSuccess ? document.getElementById('sndSuccess') : document.getElementById('sndError');
         audio.currentTime = 0; 
-        audio.play().catch(e => console.log("Audio diblokir browser, klik layar untuk mengaktifkan"));
+        audio.play().catch(e => console.log("Audio diblokir"));
     }
 
     function onScanSuccess(decodedText) {
@@ -68,8 +87,6 @@
         .then(res => res.text())
         .then(txt => {
             const isBerhasil = txt.toUpperCase().includes("BERHASIL");
-            
-            // Panggil fungsi suara MP3
             playSound(isBerhasil);
 
             statusDiv.innerHTML = `<div>${txt}</div><button class="btn btn-dark w-100 mt-2" onclick="resumeScanner()">OKE - LANJUT</button>`;
@@ -78,12 +95,7 @@
             if(isBerhasil) {
                 const bagianRespon = txt.split(":")[1] ? txt.split(":")[1].trim() : "Peserta";
                 const waktu = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                
-                historyBody.innerHTML = `
-                    <tr>
-                        <td><div class="fw-bold">${bagianRespon}</div></td>
-                        <td class="text-end align-middle">${waktu}</td>
-                    </tr>` + historyBody.innerHTML;
+                historyBody.innerHTML = `<tr><td><div class="fw-bold">${bagianRespon}</div></td><td class="text-end align-middle">${waktu}</td></tr>` + historyBody.innerHTML;
             }
         });
     }
@@ -96,7 +108,9 @@
 
     document.getElementById('start-btn').addEventListener('click', () => {
         document.getElementById('start-btn').classList.add('d-none');
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess)
+        // FIX: Konfigurasi qrbox yang lebih fleksibel untuk mobile
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
         .then(() => document.getElementById('reader').classList.add('scanning'));
     });
 </script>

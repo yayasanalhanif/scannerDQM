@@ -45,30 +45,30 @@
     // Konfigurasi Audio Oscillator
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(type) {
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-    
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-    
-        if (type === 'success') {
-            // Tipe 'sine' terdengar bersih seperti bel
-            osc.type = 'sine'; 
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 (lebih tinggi)
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
-        } else {
-            // Tipe 'sawtooth' terdengar seperti buzzer/alarm (lebih tegas)
-            osc.type = 'sawtooth'; 
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime); // Nada rendah yang kasar
-            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.6);
-        }
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    if (type === 'success') {
+        // Efek Beep Kasir: Frekuensi tinggi dan durasi sangat singkat
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1000Hz (BEEP tajam)
+        gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+    } else {
+        // Efek Gagal: Bunyi rendah dua kali (beep-beep rendah)
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
     }
+}
 
     function onScanSuccess(decodedText) {
         const petugas = document.getElementById('petugas').value;

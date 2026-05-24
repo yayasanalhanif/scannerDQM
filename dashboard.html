@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Dashboard Absensi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #38bdf8; font-family: 'Courier New', monospace; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 15px; }
+        .glow { text-shadow: 0 0 10px #38bdf8; }
+        table { color: #f1f5f9 !important; }
+        tr:hover { background: rgba(56, 189, 248, 0.1); }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container glass p-4">
+        <h2 class="text-center glow mb-4">LIVE ATTENDANCE FEED</h2>
+        <table class="table table-borderless">
+            <thead class="text-primary">
+                <tr><th>WAKTU</th><th>ID</th><th>NAMA</th></tr>
+            </thead>
+            <tbody id="live-data"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
+        
+        function updateTable() {
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    let html = "";
+                    data.slice(0, 15).forEach(row => { // Tampilkan 15 data terbaru
+                        html += `<tr>
+                            <td>${new Date(row[0]).toLocaleTimeString()}</td>
+                            <td>${row[1]}</td>
+                            <td>${row[2]}</td>
+                        </tr>`;
+                    });
+                    document.getElementById('live-data').innerHTML = html;
+                });
+        }
+        setInterval(updateTable, 3000); // Auto refresh tiap 3 detik
+        updateTable();
+    </script>
+</body>
+</html>

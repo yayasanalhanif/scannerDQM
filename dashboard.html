@@ -2,54 +2,52 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Dashboard Absensi</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #050a14; color: #e2e8f0; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+        body { background: #050a14; color: #e2e8f0; font-family: 'Orbitron', sans-serif; overflow-x: hidden; }
         
-        /* Lowerthird Background untuk Judul */
         .title-wrapper {
             background: linear-gradient(90deg, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.1) 100%);
-            border-left: 5px solid #0ea5e9;
-            padding: 20px;
-            margin-bottom: 30px;
-            position: relative;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px;
+            margin-bottom: 20px;
         }
-
-        /* Dekorasi Sudut Futuristik */
-        .corner-accent {
-            position: absolute; width: 20px; height: 20px; border: 2px solid #0ea5e9;
-        }
-        .top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
-        .bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
 
         .glass { background: rgba(17, 24, 39, 0.8); border: 1px solid #334155; border-radius: 5px; }
         
-        .table { color: #fff !important; }
+        /* Optimasi Tabel untuk HP */
+        .table { color: #fff !important; font-size: 0.85rem; }
         .table thead { color: #0ea5e9; border-bottom: 2px solid #0ea5e9; }
+        
+        /* Menghilangkan scrollbar di HP agar lebih rapi */
+        .table-responsive { overflow-x: auto; }
+        
+        /* Efek judul lebih kecil di HP */
+        h2 { font-size: 1.25rem; margin: 0; }
     </style>
 </head>
-<body class="p-4">
-    <div class="container position-relative">
+<body class="p-2">
+    <div class="container-fluid">
         <div class="title-wrapper">
-            <div class="corner-accent top-left"></div>
-            <h2 class="text-uppercase m-0">Live Attendance Feed</h2>
-            <div class="corner-accent bottom-right"></div>
+            <h2 class="text-uppercase">Live Attendance Feed</h2>
         </div>
 
-        <div class="glass p-4 shadow-lg">
-            <table class="table table-hover">
-                <thead>
-                    <tr><th>WAKTU</th><th>ID</th><th>NAMA PESERTA</th></tr>
-                </thead>
-                <tbody id="live-data"></tbody>
-            </table>
+        <div class="glass p-3 shadow-lg">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr><th>WAKTU</th><th>ID</th><th>NAMA</th></tr>
+                    </thead>
+                    <tbody id="live-data"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // URL API Anda yang sudah diintegrasikan
         const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
         
         function updateTable() {
@@ -57,20 +55,17 @@
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
-                    // Tampilkan 12 data terbaru
-                    data.slice(0, 12).forEach(row => {
+                    data.slice(0, 10).forEach(row => {
                         html += `<tr>
-                            <td class="text-info">${new Date(row[0]).toLocaleTimeString()}</td>
+                            <td class="text-info">${new Date(row[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                             <td class="fw-bold">${row[1]}</td>
-                            <td>${row[2]}</td>
+                            <td class="text-truncate" style="max-width: 100px;">${row[2]}</td>
                         </tr>`;
                     });
                     document.getElementById('live-data').innerHTML = html;
-                })
-                .catch(err => console.error("Gagal ambil data:", err));
+                });
         }
         
-        // Refresh data otomatis tiap 3 detik
         setInterval(updateTable, 3000);
         updateTable();
     </script>

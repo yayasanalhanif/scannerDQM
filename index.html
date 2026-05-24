@@ -86,14 +86,16 @@
             statusDiv.className = `alert mt-3 d-block ${isBerhasil ? 'alert-success' : 'alert-danger'}`;
             
             if(isBerhasil) {
-                const bagianRespon = txt.split(":")[1] ? txt.split(":")[1].split("-")[0].trim() : "Peserta";
+                // Mengambil teks setelah "BERHASIL: "
+                const bagianRespon = txt.split(":")[1].trim(); // Hasilnya: "[NOMOR] Nama Peserta"
+                
+                // Tampilkan di tabel
                 const waktu = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 
                 historyBody.innerHTML = `
                     <tr>
                         <td>
                             <div class="fw-bold">${bagianRespon}</div>
-                            <small class="text-muted">ID: ${decodedText}</small>
                         </td>
                         <td class="text-end align-middle">${waktu}</td>
                     </tr>` + historyBody.innerHTML;

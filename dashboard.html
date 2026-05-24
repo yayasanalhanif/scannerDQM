@@ -3,27 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Live Dashboard Absensi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: #38bdf8; font-family: 'Courier New', monospace; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 15px; }
-        .glow { text-shadow: 0 0 10px #38bdf8; }
-        table { color: #f1f5f9 !important; }
-        tr:hover { background: rgba(56, 189, 248, 0.1); }
+        body { background: #050a14; color: #e2e8f0; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+        
+        /* Lowerthird Background untuk Judul */
+        .title-wrapper {
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.1) 100%);
+            border-left: 5px solid #0ea5e9;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        /* Dekorasi Sudut Futuristik */
+        .corner-accent {
+            position: absolute; width: 20px; height: 20px; border: 2px solid #0ea5e9;
+        }
+        .top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        .glass { background: rgba(17, 24, 39, 0.8); border: 1px solid #334155; border-radius: 5px; }
+        
+        .table { color: #fff !important; }
+        .table thead { color: #0ea5e9; border-bottom: 2px solid #0ea5e9; }
     </style>
 </head>
 <body class="p-4">
-    <div class="container glass p-4">
-        <h2 class="text-center glow mb-4">LIVE ATTENDANCE FEED</h2>
-        <table class="table table-borderless">
-            <thead class="text-primary">
-                <tr><th>WAKTU</th><th>ID</th><th>NAMA</th></tr>
-            </thead>
-            <tbody id="live-data"></tbody>
-        </table>
+    <div class="container position-relative">
+        <div class="title-wrapper">
+            <div class="corner-accent top-left"></div>
+            <h2 class="text-uppercase m-0">Live Attendance Feed</h2>
+            <div class="corner-accent bottom-right"></div>
+        </div>
+
+        <div class="glass p-4 shadow-lg">
+            <table class="table table-hover">
+                <thead>
+                    <tr><th>WAKTU</th><th>ID</th><th>NAMA PESERTA</th></tr>
+                </thead>
+                <tbody id="live-data"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        // URL API Anda yang sudah diintegrasikan
         const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
         
         function updateTable() {
@@ -31,17 +57,21 @@
                 .then(res => res.json())
                 .then(data => {
                     let html = "";
-                    data.slice(0, 15).forEach(row => { // Tampilkan 15 data terbaru
+                    // Tampilkan 12 data terbaru
+                    data.slice(0, 12).forEach(row => {
                         html += `<tr>
-                            <td>${new Date(row[0]).toLocaleTimeString()}</td>
-                            <td>${row[1]}</td>
+                            <td class="text-info">${new Date(row[0]).toLocaleTimeString()}</td>
+                            <td class="fw-bold">${row[1]}</td>
                             <td>${row[2]}</td>
                         </tr>`;
                     });
                     document.getElementById('live-data').innerHTML = html;
-                });
+                })
+                .catch(err => console.error("Gagal ambil data:", err));
         }
-        setInterval(updateTable, 3000); // Auto refresh tiap 3 detik
+        
+        // Refresh data otomatis tiap 3 detik
+        setInterval(updateTable, 3000);
         updateTable();
     </script>
 </body>

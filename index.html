@@ -17,6 +17,10 @@
     </style>
 </head>
 <body>
+
+<audio id="sndSuccess" src="https://www.soundjay.com/buttons_c2026/beep-08b.mp3" preload="auto"></audio>
+<audio id="sndError" src="https://www.soundjay.com/buttons_c2026/beep-09.mp3" preload="auto"></audio>
+
 <div class="container py-4">
     <div class="card p-4 mx-auto" style="max-width: 500px;">
         <h4 class="text-center fw-bold text-primary mb-3">Absen Dauroh Qowa'idul Mudzaa'ah</h4>
@@ -41,34 +45,12 @@
     const html5QrCode = new Html5Qrcode("reader");
     const statusDiv = document.getElementById('status');
     const historyBody = document.getElementById('history-body');
-    
-    // Konfigurasi Audio Oscillator
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(type) {
-    const osc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
 
-    osc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    if (type === 'success') {
-        // Efek Beep Kasir: Frekuensi tinggi dan durasi sangat singkat
-        osc.type = 'triangle'; 
-        osc.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1000Hz (BEEP tajam)
-        gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.15);
-    } else {
-        // Efek Gagal: Bunyi rendah dua kali (beep-beep rendah)
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.4);
+    function playSound(isSuccess) {
+        const audio = isSuccess ? document.getElementById('sndSuccess') : document.getElementById('sndError');
+        audio.currentTime = 0; 
+        audio.play().catch(e => console.log("Audio diblokir browser, klik layar untuk mengaktifkan"));
     }
-}
 
     function onScanSuccess(decodedText) {
         const petugas = document.getElementById('petugas').value;
@@ -87,24 +69,19 @@
         .then(txt => {
             const isBerhasil = txt.toUpperCase().includes("BERHASIL");
             
-            // Panggil Audio Oscillator
-            playTone(isBerhasil ? 'success' : 'error');
+            // Panggil fungsi suara MP3
+            playSound(isBerhasil);
 
             statusDiv.innerHTML = `<div>${txt}</div><button class="btn btn-dark w-100 mt-2" onclick="resumeScanner()">OKE - LANJUT</button>`;
             statusDiv.className = `alert mt-3 d-block ${isBerhasil ? 'alert-success' : 'alert-danger'}`;
             
             if(isBerhasil) {
-                // Mengambil teks setelah "BERHASIL: "
-                const bagianRespon = txt.split(":")[1].trim(); // Hasilnya: "[NOMOR] Nama Peserta"
-                
-                // Tampilkan di tabel
+                const bagianRespon = txt.split(":")[1] ? txt.split(":")[1].trim() : "Peserta";
                 const waktu = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 
                 historyBody.innerHTML = `
                     <tr>
-                        <td>
-                            <div class="fw-bold">${bagianRespon}</div>
-                        </td>
+                        <td><div class="fw-bold">${bagianRespon}</div></td>
                         <td class="text-end align-middle">${waktu}</td>
                     </tr>` + historyBody.innerHTML;
             }

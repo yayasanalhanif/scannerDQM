@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian Kartu Peserta</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+      h2 { color: #333; text-align: center; }
+      input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+      th { background-color: #f4f4f4; }
+      tr:hover { background-color: #f9f9f9; }
+      .loading { text-align: center; color: #666; font-style: italic; }
+      a { color: #1a73e8; text-decoration: none; font-weight: bold; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h2>Cetak Kartu Peserta</h2>
+    
+    <input type="text" id="searchInput" placeholder="Ketik nama atau nomor peserta..." onkeyup="filterTable()">
+    <div id="loading" class="loading">Memuat data dari server...</div>
+    
+    <table id="dataTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>Nama Lengkap</th>
+          <th>Nomor Peserta</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+      // MASUKKAN URL WEB APP APPS SCRIPT DI BAWAH INI:
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec';
+      
+      let allData = [];
+
+      // Mengambil data menggunakan fetch API
+      async function loadData() {
+        try {
+          const response = await fetch(APPS_SCRIPT_URL);
+          allData = await response.json();
+          
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('dataTable').style.display = 'table';
+          renderTable(allData);
+        } catch (error) {
+          document.getElementById('loading').textContent = 'Gagal memuat data. Pastikan link API benar.';
+          console.error('Error fetching data:', error);
+        }
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Data tidak ditemukan</td></tr>';
+          return;
+        }
+        
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          const tdNama = document.createElement('td');
+          tdNama.textContent = row.nama;
+          
+          const tdNomor = document.createElement('td');
+          if (row.link && row.link.startsWith('http')) {
+            const a = document.createElement('a');
+            a.href = row.link;
+            a.textContent = row.noPeserta;
+            a.target = '_blank';
+            tdNomor.appendChild(a);
+          } else {
+            tdNomor.textContent = row.noPeserta;
+          }
+          
+          tr.appendChild(tdNama);
+          tr.appendChild(tdNomor);
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterTable() {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        const filteredData = allData.filter(row => 
+          row.nama.toLowerCase().includes(keyword) || 
+          row.noPeserta.toLowerCase().includes(keyword)
+        );
+        renderTable(filteredData);
+      }
+
+      // Jalankan fungsi saat halaman dimuat
+      window.onload = loadData;
+    </script>
+  </body>
+</html>

@@ -31,21 +31,25 @@
     
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData&sheet=Kartu Peserta";
-        fetch(API_URL)
-            .then(res => res.json())
-            .then(data => {
-                let html = "";
-                data.slice(1).forEach(row => {
-                    html += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`;
-                });
-                document.getElementById('data-body').innerHTML = html;
-                
-                // Inisialisasi DataTables
-                $('#tabelPeserta').DataTable({
-                    "pageLength": 10,
-                    "lengthMenu": [10, 25, 50, 100, -1] // -1 = Semua
-                });
+        
+        // Fungsi callback yang dipanggil oleh GAS
+        function myCallback(data) {
+            let html = "";
+            data.forEach(row => {
+                html += `<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${row[2]||''}</td></tr>`;
             });
+            document.getElementById('data-body').innerHTML = html;
+            
+            $('#tabelPeserta').DataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 25, 50, 100, -1]
+            });
+        }
+    
+        // Memanggil API dengan menambahkan parameter callback
+        const script = document.createElement('script');
+        script.src = API_URL + "&callback=myCallback";
+        document.body.appendChild(script);
     </script>
 </body>
 </html>

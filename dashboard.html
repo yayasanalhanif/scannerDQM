@@ -74,16 +74,32 @@
             
             let html = "";
             data.slice(0, 10).forEach(row => {
-                html += `<tr>
-                    <td class="text-info">${new Date(row[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                    <td class="fw-bold">${row[1] || '-'}</td>
-                    <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
-                </tr>`;
-            });
-            document.getElementById('live-data').innerHTML = html;
-        } catch (err) {
-            console.error("Gagal ambil data:", err);
+    let waktu = row[0];
+    let jam = "N/A";
+    
+    // Logika deteksi format tanggal
+    if (waktu) {
+        // Jika waktu berupa angka (serial Google Sheets), konversi ke format Date
+        if (typeof waktu === 'number') {
+            let t = new Date((waktu - 25569) * 86400 * 1000);
+            jam = t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } 
+        // Jika waktu berupa string ISO (2026-05-29T06:00:00.000Z)
+        else if (!isNaN(Date.parse(waktu))) {
+            jam = new Date(waktu).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
+        // Jika waktu berupa string format Indonesia (DD/MM/YYYY HH:MM:SS)
+        else {
+            jam = waktu; // Tampilkan mentah jika format tidak dikenali
+        }
+    }
+
+    html += `<tr>
+        <td class="text-info">${jam}</td>
+        <td class="fw-bold">${row[1] || '-'}</td>
+        <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+    </tr>`;
+});
     }
     
     setInterval(updateTable, 3000);

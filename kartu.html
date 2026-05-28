@@ -76,6 +76,7 @@ fetch(URL)
                         ${row[15] || 'Belum Ada No'}
                     </a>
                 </td>
+                
             </tr>`;
         });
         document.getElementById('data-body').innerHTML = html;
@@ -83,6 +84,11 @@ fetch(URL)
         // Inisialisasi DataTables setelah data di-render dan bahasa indoesia
         $('#tabelPeserta').DataTable({
             "order": [[1, 'asc']],
+            "columnDefs": [ {
+                "searchable": false,
+                "orderable": false,
+                "targets": 0 // Kolom pertama (No) tidak bisa diurutkan
+            } ],
             // BAGIAN INI YANG MENGATUR JUMLAH DATA:
             "pageLength": 25, // Jumlah data yang tampil saat halaman pertama kali dibuka
             "lengthMenu": [25, 50, 100, 250], // Pilihan dropdown yang muncul untuk user

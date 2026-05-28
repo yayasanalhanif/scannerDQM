@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,54 +8,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Variabel Warna */
-        :root {
-            --bg-body: #f4f7f6;
-            --bg-card: #ffffff;
-            --text-main: #333;
-            --header-bg: #0d6efd;
-            --text-white: #ffffff;
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #050a14;
-            --bg-card: #111827;
-            --text-main: #e2e8f0;
-            --header-bg: #0ea5e9;
-        }
-
+        :root { --bg-body: #f4f7f6; --bg-card: #ffffff; --text-main: #333; --header-bg: #0d6efd; --text-white: #ffffff; }
+        [data-theme="dark"] { --bg-body: #050a14; --bg-card: #111827; --text-main: #e2e8f0; --header-bg: #0ea5e9; }
+        
         body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; transition: 0.3s; }
-        .container { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-top: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: 0.3s; }
-        
-        h2 { color: var(--text-main); border-left: 5px solid var(--header-bg); padding-left: 15px; }
-        
-        .table { color: var(--text-main); }
+        .container { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-top: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .btn-theme { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--header-bg); }
         .table thead { background-color: var(--header-bg); color: var(--text-white); }
-        .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(128,128,128,0.1); }
-        
-        /* Tombol Tema */
-        #theme-toggle { cursor: pointer; border: none; padding: 10px 20px; border-radius: 5px; background: var(--header-bg); color: white; margin-bottom: 20px; }
-        .btn-outline-primary {
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-        .btn-outline-primary:hover {
-            background: var(--header-bg);
-            color: white;
-        }
+        .link-preview { text-decoration: none; color: var(--header-bg); font-weight: 600; }
     </style>
 </head>
 <body class="p-2 p-md-4">
     <div class="container">
-        <button id="theme-toggle">Ubah Tema (Terang/Gelap)</button>
-        <h2>Data Kartu Peserta</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Data Kartu Peserta</h2>
+            <button id="theme-toggle" class="btn-theme"><i class="fas fa-moon"></i></button>
+        </div>
         <div class="table-responsive">
             <table id="tabelPeserta" class="table table-hover table-striped">
-                <thead><tr><th>No</th><th>Nama</th><th>No Peserta</th></tr></thead>
+                <thead><tr><th>No</th><th>Nama</th><th>No Peserta</th><th>Link Kartu</th></tr></thead>
                 <tbody id="data-body"></tbody>
             </table>
         </div>
@@ -66,48 +41,42 @@
     
     <script>
         // Logika Tema
-        const toggleBtn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-
-        toggleBtn.addEventListener('click', () => {
-            let theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        const btn = document.getElementById('theme-toggle');
+        btn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
+            btn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
 
         // Logika Data
-
         const SPREADSHEET_ID = "1EsB1vj225nkuxA7Af2LBvlwTplFkOsUQOMdXjiQjVQg"; 
         const API_KEY = "AIzaSyAWKh1aF3RcIpAj2TzUNpXze3GLA-Z9cmI";
-        const RANGE = "KartuPeserta!A2:C300"; 
         const URL = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-
 
         fetch(URL)
             .then(res => res.json())
             .then(res => {
-                if (res.values) {
-                    let html = "";
-                    // Ganti bagian ini di dalam script fetch
-                res.values.forEach(row => {
-                    // Asumsi: row[0]=No, row[1]=Nama, row[2]=No Peserta, row[3]=Link Download
-                    let linkDownload = row[3] ? row[3] : "#"; 
-                    
+                let html = "";
+                // Asumsi: P=kolom 15 (index 15), X=kolom 23 (index 23)
+                res.values.forEach((row, index) => {
                     html += `<tr>
-                                <td>${row[0]||''}</td>
-                                <td>${row[1]||''}</td>
-                                <td>
-                                    <a href="${linkDownload}" target="_blank" class="btn btn-sm btn-outline-primary shadow-sm">
-                                        ${row[2]||''} <i class="bi bi-download"></i>
-                                    </a>
-                                </td>
-                            </tr>`;
+                        <td>${index + 1}</td>
+                        <td>${row[1]||''}</td> 
+                        <td>${row[15]||''}</td>
+                        <td><a href="${row[23]||'#'}" target="_blank" class="link-preview">Lihat Kartu</a></td>
+                    </tr>`;
                 });
-                    
-                    document.getElementById('data-body').innerHTML = html;
-                    $('#tabelPeserta').DataTable();
-                }
+                document.getElementById('data-body').innerHTML = html;
+                
+                $('#tabelPeserta').DataTable({
+                    language: {
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        search: "Cari:",
+                        paginate: { first: "Pertama", last: "Terakhir", next: "Selanjutnya", previous: "Sebelumnya" },
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri"
+                    }
+                });
             });
     </script>
 </body>

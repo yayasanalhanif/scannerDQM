@@ -41,7 +41,7 @@
         <div class="table-responsive">
             <table id="tabelPeserta" class="table table-hover table-striped">
                 <thead>
-                    <tr><th>No</th><th>Nama</th><th>No Peserta</th><th>Download</th></tr>
+                    <tr><th>No</th><th>Nama</th><th>No Peserta</th></tr>
                 </thead>
                 <tbody id="data-body"></tbody>
             </table>
@@ -74,12 +74,15 @@ fetch(URL)
     .then(res => {
         let html = "";
         res.values.forEach((row, index) => {
-            let link = row[23] || "#";
+            let link = row[23] || "#"; 
+            
             html += `<tr>
-                <td></td> <!-- Biarkan kosong, akan diisi otomatis oleh script -->
-                <td>${row[3] || ''}</td> 
-                <td>${row[15] || 'Belum Ada No'}</td>
-                <td><a href="${link}" target="_blank" class="link-preview"><i class="fas fa-file-arrow-down"></i></a></td>
+                <td></td> <td>${row[3] || ''}</td> 
+                <td>
+                    <a href="${link}" target="_blank" class="peserta-link" title="Klik untuk download kartu">
+                        ${row[15] || 'Belum Ada No'}
+                    </a>
+                </td>
             </tr>`;
         });
         document.getElementById('data-body').innerHTML = html;

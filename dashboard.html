@@ -48,10 +48,8 @@
     </div>
 
     <script>
-
     const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
     
-    // Fungsi khusus untuk menangani JSONP hasil dari Code.gs
     async function fetchJSONP(url) {
         return new Promise((resolve, reject) => {
             const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
@@ -64,42 +62,41 @@
             const script = document.createElement('script');
             script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
             document.body.appendChild(script);
+            
+            script.onerror = () => reject("Gagal memuat JSONP");
         });
     }
 
     async function updateTable() {
         try {
-            // Kita gunakan fungsi khusus di atas, bukan fetch biasa
             const data = await fetchJSONP(API_URL);
             
             let html = "";
             data.slice(0, 10).forEach(row => {
-    let waktu = row[0];
-    let jam = "N/A";
-    
-    // Logika deteksi format tanggal
-    if (waktu) {
-        // Jika waktu berupa angka (serial Google Sheets), konversi ke format Date
-        if (typeof waktu === 'number') {
-            let t = new Date((waktu - 25569) * 86400 * 1000);
-            jam = t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        } 
-        // Jika waktu berupa string ISO (2026-05-29T06:00:00.000Z)
-        else if (!isNaN(Date.parse(waktu))) {
-            jam = new Date(waktu).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        // Jika waktu berupa string format Indonesia (DD/MM/YYYY HH:MM:SS)
-        else {
-            jam = waktu; // Tampilkan mentah jika format tidak dikenali
-        }
-    }
+                let waktu = row[0];
+                let jam = "N/A";
+                
+                if (waktu) {
+                    if (typeof waktu === 'number') {
+                        let t = new Date((waktu - 25569) * 86400 * 1000);
+                        jam = t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    } else if (!isNaN(Date.parse(waktu))) {
+                        jam = new Date(waktu).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    } else {
+                        jam = waktu;
+                    }
+                }
 
-    html += `<tr>
-        <td class="text-info">${jam}</td>
-        <td class="fw-bold">${row[1] || '-'}</td>
-        <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
-    </tr>`;
-});
+                html += `<tr>
+                    <td class="text-info">${jam}</td>
+                    <td class="fw-bold">${row[1] || '-'}</td>
+                    <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+                </tr>`;
+            });
+            document.getElementById('live-data').innerHTML = html;
+        } catch (err) {
+            console.error("Terjadi kesalahan:", err);
+        } // <--- BAGIAN INI YANG TADI HILANG
     }
     
     setInterval(updateTable, 3000);

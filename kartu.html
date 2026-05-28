@@ -68,7 +68,7 @@ fetch(URL)
                 <td></td> <!-- Biarkan kosong, akan diisi otomatis oleh script -->
                 <td>${row[3] || ''}</td> 
                 <td>${row[15] || 'Belum Ada No'}</td>
-                <td><a href="${link}" target="_blank" class="link-preview">Lihat Kartu</a></td>
+                <td><a href="${link}" target="_blank" class="link-preview"><i class="fas fa-file-arrow-down"></i></a></td>
             </tr>`;
         });
         document.getElementById('data-body').innerHTML = html;

@@ -29,7 +29,9 @@
         </div>
         <div class="table-responsive">
             <table id="tabelPeserta" class="table table-hover table-striped">
-                <thead><tr><th>No</th><th>Nama</th><th>No Peserta</th></tr></thead>
+                <thead>
+                    <tr><th>No</th><th>Nama</th><th>No Peserta</th><th>Download</th></tr>
+                </thead>
                 <tbody id="data-body"></tbody>
             </table>
         </div>
@@ -60,64 +62,45 @@ fetch(URL)
     .then(res => res.json())
     .then(res => {
         let html = "";
-        // Kita loop dari index 1 (melewati header)
         res.values.forEach((row, index) => {
-            // row[3] = Nama (Kolom D)
-            // row[15] = No Peserta (Kolom P)
-            // row[23] = Link (Kolom X)
-            
-            let link = row[23] || "#"; // Ambil link dari Kolom X
-            
+            let link = row[23] || "#";
             html += `<tr>
-                <td>${index + 1}</td>
+                <td></td> <!-- Biarkan kosong, akan diisi otomatis oleh script -->
                 <td>${row[3] || ''}</td> 
-                <td>
-                    <a href="${link}" target="_blank" class="link-preview">
-                        ${row[15] || 'Belum Ada No'}
-                    </a>
-                </td>
-                
+                <td>${row[15] || 'Belum Ada No'}</td>
+                <td><a href="${link}" target="_blank" class="link-preview">Lihat Kartu</a></td>
             </tr>`;
         });
         document.getElementById('data-body').innerHTML = html;
         
-        // Inisialisasi DataTables setelah data di-render dan bahasa indoesia
-        $('#tabelPeserta').DataTable({
+        // Inisialisasi DataTable SATU KALI saja dengan destroy: true
+        var t = $('#tabelPeserta').DataTable({
+            "destroy": true, // Mencegah error inisialisasi ganda
             "order": [[1, 'asc']],
-            "columnDefs": [ {
-                "searchable": false,
-                "orderable": false,
-                "targets": 0 // Kolom pertama (No) tidak bisa diurutkan
-            } ],
-            // BAGIAN INI YANG MENGATUR JUMLAH DATA:
-            "pageLength": 25, // Jumlah data yang tampil saat halaman pertama kali dibuka
-            "lengthMenu": [25, 50, 100, 250], // Pilihan dropdown yang muncul untuk user
-
-            //ubah bahasa navigasi
+            "columnDefs": [ 
+                { "searchable": false, "orderable": false, "targets": [0, 3] } 
+            ],
+            "pageLength": 25,
+            "lengthMenu": [25, 50, 100, 250],
             "language": {
-                "searchPlaceholder": "Ketik nama disini...", // Teks di dalam kotak
-                "lengthMenu": "Tampilkan _MENU_ baris",
+                "searchPlaceholder": "Ketik nama disini...",
                 "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ baris",
                 "zeroRecords": "Data tidak ditemukan",
-                "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 "infoEmpty": "Tidak ada data tersedia",
                 "infoFiltered": "(difilter dari _MAX_ total data)",
-                "paginate": {
-                    "first": "<<",
-                    "last": ">>",
-                    "next": ">",
-                    "previous": "<"
-                }
+                "paginate": { "first": "<<", "last": ">>", "next": ">", "previous": "<" }
             }
         });
-    });
-    var t = $('#tabelPeserta').DataTable();
 
-t.on('order.dt search.dt', function () {
-    t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-        cell.innerHTML = i+1;
-    } );
-}).draw();
-    </script>
+        // Script untuk nomor otomatis (berurutan meski di-sort/search)
+        t.on('order.dt search.dt', function () {
+            t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                cell.innerHTML = i+1;
+            });
+        }).draw();
+    });
+</script>
 </body>
 </html>

@@ -29,7 +29,7 @@
         </div>
         <div class="table-responsive">
             <table id="tabelPeserta" class="table table-hover table-striped">
-                <thead><tr><th>Nama</th><th>No Peserta</th></tr></thead>
+                <thead><tr><th>No</th><th>Nama</th><th>No Peserta</th></tr></thead>
                 <tbody id="data-body"></tbody>
             </table>
         </div>
@@ -69,7 +69,7 @@ fetch(URL)
             let link = row[23] || "#"; // Ambil link dari Kolom X
             
             html += `<tr>
-                <td>${index + 1}</td>
+                <td></td>
                 <td>${row[3] || ''}</td> 
                 <td>
                     <a href="${link}" target="_blank" class="link-preview">

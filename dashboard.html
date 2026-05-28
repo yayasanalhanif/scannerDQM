@@ -48,26 +48,46 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
-        
-        function updateTable() {
-            fetch(API_URL)
-                .then(res => res.json())
-                .then(data => {
-                    let html = "";
-                    data.slice(0, 10).forEach(row => {
-                        html += `<tr>
-                            <td class="text-info">${new Date(row[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                            <td class="fw-bold">${row[1]}</td>
-                            <td class="text-truncate" style="max-width: 100px;">${row[2]}</td>
-                        </tr>`;
-                    });
-                    document.getElementById('live-data').innerHTML = html;
-                });
+
+    const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData";
+    
+    // Fungsi khusus untuk menangani JSONP hasil dari Code.gs
+    async function fetchJSONP(url) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            window[callbackName] = (data) => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(data);
+            };
+
+            const script = document.createElement('script');
+            script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+            document.body.appendChild(script);
+        });
+    }
+
+    async function updateTable() {
+        try {
+            // Kita gunakan fungsi khusus di atas, bukan fetch biasa
+            const data = await fetchJSONP(API_URL);
+            
+            let html = "";
+            data.slice(0, 10).forEach(row => {
+                html += `<tr>
+                    <td class="text-info">${new Date(row[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td class="fw-bold">${row[1] || '-'}</td>
+                    <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+                </tr>`;
+            });
+            document.getElementById('live-data').innerHTML = html;
+        } catch (err) {
+            console.error("Gagal ambil data:", err);
         }
-        
-        setInterval(updateTable, 3000);
-        updateTable();
-    </script>
+    }
+    
+    setInterval(updateTable, 3000);
+    updateTable();
+</script>
 </body>
 </html>

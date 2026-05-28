@@ -1,35 +1,3 @@
-// Di dalam script fetch kartu.html:
-fetch(URL)
-    .then(res => res.json())
-    .then(res => {
-        let html = "";
-        // Kita loop dari index 1 (melewati header)
-        res.values.forEach((row, index) => {
-            // row[3] = Nama (Kolom D)
-            // row[15] = No Peserta (Kolom P)
-            // row[23] = Link (Kolom X)
-            
-            let link = row[23] || "#"; // Ambil link dari Kolom X
-            
-            html += `<tr>
-                <td>${index + 1}</td>
-                <td>${row[3] || ''}</td> 
-                <td>
-                    <a href="${link}" target="_blank" class="link-preview">
-                        ${row[15] || 'Belum Ada No'}
-                    </a>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('data-body').innerHTML = html;
-        
-        // Inisialisasi DataTables setelah data di-render
-        $('#tabelPeserta').DataTable({
-            language: { /* ... (bahasa Indonesia seperti sebelumnya) ... */ }
-        });
-    });
-
-
 
 <!DOCTYPE html>
 <html lang="id">

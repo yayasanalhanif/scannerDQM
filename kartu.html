@@ -29,7 +29,7 @@
         </div>
         <div class="table-responsive">
             <table id="tabelPeserta" class="table table-hover table-striped">
-                <thead><tr><th>No</th><th>Nama</th><th>No Peserta</th><th>Link Kartu</th></tr></thead>
+                <thead><tr><th>Nama</th><th>No Peserta</th><th>Link Kartu</th></tr></thead>
                 <tbody id="data-body"></tbody>
             </table>
         </div>
@@ -52,7 +52,7 @@
         // Logika Data
         const SPREADSHEET_ID = "1EsB1vj225nkuxA7Af2LBvlwTplFkOsUQOMdXjiQjVQg"; 
         const API_KEY = "AIzaSyAWKh1aF3RcIpAj2TzUNpXze3GLA-Z9cmI";
-                const RANGE = "Form Responses 1!A2:X300"; 
+        const RANGE = "Form Responses 1!A2:X300"; 
         const URL = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
 
         // Di dalam script fetch kartu.html:

@@ -32,25 +32,32 @@
     <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbynIfrRtmKorvPGNg_S_2qf1_rijMiMJBYS779ter6Vg8kpEAqOcHUOCYQBr9JtA9LKaQ/exec?action=getData&sheet=KartuPeserta";
     
-    // Fungsi callback ini yang akan mengisi data
-    function myCallback(data) {
+    // Pastikan fungsi ini ada di scope global agar bisa diakses oleh JSONP
+    window.myCallback = function(data) {
+        let tbody = document.getElementById('data-body');
         let html = "";
+        
         data.forEach(row => {
             html += `<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${row[2]||''}</td></tr>`;
         });
         
-        // Masukkan data ke tbody
-        document.getElementById('data-body').innerHTML = html;
+        tbody.innerHTML = html;
         
-        // INI KUNCINYA: Inisialisasi DataTables HANYA setelah data masuk
-        $('#tabelPeserta').DataTable({
-            "pageLength": 10,
-            "lengthMenu": [10, 25, 50, 100, -1],
-            "destroy": true // Menghindari error jika tabel sudah terinisialisasi
-        });
+        // Inisialisasi atau Refresh DataTables
+        // Kita gunakan setTimeout untuk memberi waktu browser merender HTML sebelum tabel di-bind
+        setTimeout(function() {
+            if ($.fn.DataTable.isDataTable('#tabelPeserta')) {
+                $('#tabelPeserta').DataTable().destroy();
+            }
+            $('#tabelPeserta').DataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 25, 50, 100, -1],
+                "autoWidth": false
+            });
+        }, 100);
     }
 
-    // Memanggil API
+    // Memanggil API dengan cara menyuntikkan tag script
     const script = document.createElement('script');
     script.src = API_URL + "&callback=myCallback";
     document.body.appendChild(script);

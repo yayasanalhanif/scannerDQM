@@ -73,26 +73,27 @@
             
             let html = "";
             data.slice(0, 10).forEach(row => {
-                let waktu = row[0];
-                let jam = "N/A";
-                
-                if (waktu) {
-                    if (typeof waktu === 'number') {
-                        let t = new Date((waktu - 25569) * 86400 * 1000);
-                        jam = t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    } else if (!isNaN(Date.parse(waktu))) {
-                        jam = new Date(waktu).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    } else {
-                        jam = waktu;
-                    }
-                }
+    let waktu = new Date(row[0]);
+    let jam = "N/A";
 
-                html += `<tr>
-                    <td class="text-info">${jam}</td>
-                    <td class="fw-bold">${row[1] || '-'}</td>
-                    <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
-                </tr>`;
-            });
+    // Cek apakah tanggal valid
+    if (!isNaN(waktu.getTime())) {
+        // Format: DD/MM/YYYY HH:MM (24 Jam)
+        let dd = String(waktu.getDate()).padStart(2, '0');
+        let mm = String(waktu.getMonth() + 1).padStart(2, '0');
+        let yyyy = waktu.getFullYear();
+        let hh = String(waktu.getHours()).padStart(2, '0');
+        let min = String(waktu.getMinutes()).padStart(2, '0');
+        
+        jam = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+    }
+
+    html += `<tr>
+        <td class="text-info" style="font-size: 0.75rem;">${jam}</td>
+        <td class="fw-bold">${row[1] || '-'}</td>
+        <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+    </tr>`;
+});
             document.getElementById('live-data').innerHTML = html;
         } catch (err) {
             console.error("Terjadi kesalahan:", err);

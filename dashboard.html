@@ -39,7 +39,7 @@
             <div class="table-responsive">
                 <table class="table table-hover table-sm">
                     <thead>
-                        <tr><th>WAKTU</th><th>ID</th><th>NAMA</th></tr>
+                        <tr><th>WAKTU</th><th>ID</th><th>NAMA PESERTA</th></tr>
                     </thead>
                     <tbody id="live-data"></tbody>
                 </table>
@@ -84,8 +84,9 @@
         let yyyy = waktu.getFullYear();
         let hh = String(waktu.getHours()).padStart(2, '0');
         let min = String(waktu.getMinutes()).padStart(2, '0');
+        let ss = String(waktu.getSeconds()).padStart(2, '0'); // Detik
         
-        jam = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+        jam = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
     }
 
     html += `<tr>

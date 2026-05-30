@@ -2,47 +2,105 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Ujian Bertauhid</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Kitab Qowai'dul Mudzaa'ah</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .quiz-card { background: white; max-width: 650px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 30px; }
-        .question-box { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
-        .points { position: absolute; top: 15px; right: 20px; color: #888; font-size: 0.8em; }
-        .option { display: block; padding: 10px; border: 1px solid #ddd; border-radius: 20px; margin: 8px 0; cursor: pointer; }
-        .option:hover { background: #f0f7ff; }
-        button { background: #1a73e8; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; }
-        #result { display: none; text-align: center; }
-        .score-big { font-size: 64px; color: #1a73e8; font-weight: bold; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .quiz-card { background: white; max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }
+        .timer-badge { position: sticky; top: 10px; background: #ef4444; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; float: right; z-index: 100; box-shadow: 0 2px 10px rgba(239,68,68,0.3); }
+        .question-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; margin-bottom: 25px; position: relative; background: #ffffff; }
+        .points { position: absolute; top: 15px; right: 20px; color: #64748b; font-size: 0.85em; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
+        .option { display: block; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 10px 0; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #f0fdf4; border-color: #22c55e; }
+        input[type="radio"] { margin-right: 10px; accent-color: #22c55e; transform: scale(1.2); }
+        .verification-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .info-display { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 500; display: none; }
+        .info-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .search-input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 16px; box-sizing: border-box; transition: 0.2s; }
+        .search-input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        button { background: #2563eb; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        button:hover:not(:disabled) { background: #1d4ed8; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        #result, #expired-msg { display: none; text-align: center; padding: 20px; }
+        .score-big { font-size: 72px; color: #2563eb; font-weight: 900; margin: 20px 0; }
+        #loading-text { font-size: 13px; color: #64748b; margin-top: 8px; display: block; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; text-align: left; }
+        .leaderboard-table th { background: #f1f5f9; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #334155; }
+        .leaderboard-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        .row-highlight { background: #fef9c3; font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="quiz-card">
-    <div id="quiz-form">
-        <h2>Ujian Bertauhid</h2>
-        <input type="email" id="email" placeholder="Email Anda" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;" required>
-        
-            <div class="question-box">
-                <span class="points">10 poin</span>
-                <p><strong>1. kaki sapi ada</strong></p>
-                <label class="option"><input type="radio" name="q1" value="A"> a. ada 2</label>
-                <label class="option"><input type="radio" name="q1" value="B"> b. ada 3</label>
-                <label class="option"><input type="radio" name="q1" value="C"> c. ada 4</label>
-            </div>
-            <div class="question-box">
-                <span class="points">10 poin</span>
-                <p><strong>2. rukun islam ada berapa</strong></p>
-                <label class="option"><input type="radio" name="q2" value="A"> a. 1</label>
-                <label class="option"><input type="radio" name="q2" value="B"> b. 2</label>
-                <label class="option"><input type="radio" name="q2" value="C"> c. 3</label>
-            </div>
-        <button onclick="submitQuiz()">Kirim Jawaban</button>
+<div class="quiz-card" id="main-container">
+    <div id="expired-msg">
+        <h2 style="color:#ef4444; font-size:24px;">Waktu Akses Telah Ditutup</h2>
+        <p>Mohon maaf, batas waktu untuk mengikuti ujian ini sudah terlewati.</p>
     </div>
-    <div id="result">
-        <h2>Hasil Kuis</h2>
-        <div class="score-big" id="final-score">0</div>
-        <p>Jawaban Anda telah tersimpan.</p>
+
+    <div id="quiz-area" style="display:none;">
+        <div class="timer-badge" id="timer-display">--:--</div>
+        <div id="quiz-form">
+            <h2 style="color:#1e293b; margin-top:0;">Quiz Kitab Qowai'dul Mudzaa'ah</h2>
+            <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:20px;">
+            
+            <div class="verification-box">
+                <label style="color:#334155; font-weight: 600; display:block; margin-bottom:8px;">Identitas Peserta:</label>
+                <input type="text" id="input-peserta" list="datalist-peserta" class="search-input" placeholder="Ketik ID atau Nama Anda di sini..." autocomplete="off">
+                <datalist id="datalist-peserta"></datalist>
+                <span id="loading-text">Menyinkronkan data dengan server...</span>
+                <div id="info-peserta" class="info-display info-success"></div>
+            </div>
+            
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>1. Ada berapa kaidah dalam kitab Qowa'idul Mudzaa'ah?</strong></p>
+                    <label class="option"><input type="radio" name="q1" value="A"> <strong>A.</strong> 126</label>
+                <label class="option"><input type="radio" name="q1" value="B"> <strong>B.</strong> 127</label>
+                <label class="option"><input type="radio" name="q1" value="C"> <strong>C.</strong> 128</label>
+                
+                </div>
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>2. Siapa penulis kitab ini?</strong></p>
+                    <label class="option"><input type="radio" name="q2" value="A"> <strong>A.</strong> saya</label>
+                <label class="option"><input type="radio" name="q2" value="B"> <strong>B.</strong> dia</label>
+                <label class="option"><input type="radio" name="q2" value="C"> <strong>C.</strong> kamu</label>
+                
+                </div>
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>3. Ada berapa kaidah dalam kitab Qowa'idul Mudzaa'ah?</strong></p>
+                    <label class="option"><input type="radio" name="q3" value="A"> <strong>A.</strong> 126</label>
+                <label class="option"><input type="radio" name="q3" value="B"> <strong>B.</strong> 127</label>
+                <label class="option"><input type="radio" name="q3" value="C"> <strong>C.</strong> 128</label>
+                
+                </div>
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>4. Siapa penulis kitab ini?</strong></p>
+                    <label class="option"><input type="radio" name="q4" value="A"> <strong>A.</strong> saya</label>
+                <label class="option"><input type="radio" name="q4" value="B"> <strong>B.</strong> dia</label>
+                <label class="option"><input type="radio" name="q4" value="C"> <strong>C.</strong> kamu</label>
+                
+                </div>
+            <button type="button" id="btn-submit" onclick="submitQuiz(false)" disabled>Kirim Jawaban Sekarang</button>
+        </div>
+        
+        <div id="result">
+            <h2 style="color:#1e293b; margin-bottom:0;">Ujian Selesai</h2>
+            <p style="color:#64748b; margin-top:5px;">Skor Akhir Anda:</p>
+            <div class="score-big" id="final-score">0</div>
+            <p id="duration-info" style="font-weight:600; color:#475569; background:#f1f5f9; display:inline-block; padding:8px 15px; border-radius:20px;"></p>
+            
+            <div id="status-pesan" style="background:#eff6ff; padding:15px; border-radius:8px; border:1px solid #bfdbfe; margin-top:20px;">
+                <p style="color:#1d4ed8; margin:0; font-weight:600;">⏳ Sedang mengambil Papan Peringkat (Leaderboard)...</p>
+            </div>
+            
+            <div id="leaderboard-area"></div>
+        </div>
     </div>
 </div>
+
 <script>
     const answerKey = {
   "q1": {
@@ -50,26 +108,157 @@
     "pts": 10
   },
   "q2": {
-    "ans": "B",
+    "ans": "A",
+    "pts": 10
+  },
+  "q3": {
+    "ans": "C",
+    "pts": 10
+  },
+  "q4": {
+    "ans": "A",
     "pts": 10
   }
 };
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec";
+    const DEADLINE = new Date("2026-05-31T12:00").getTime(); 
+    
+    let START_TIME, timeRemaining = 2 * 60, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown;
 
-    function submitQuiz() {
-        const email = document.getElementById('email').value;
-        if(!email) return alert("Email wajib!");
+    window.onload = function() {
+        if (DEADLINE && Date.now() > DEADLINE) {
+            document.getElementById('expired-msg').style.display = 'block';
+            return; 
+        }
+        document.getElementById('quiz-area').style.display = 'block';
+        START_TIME = Date.now();
+        mulaiTimer();
+        muatDataPeserta();
+    };
+
+    function muatDataPeserta() {
+        fetch(WEB_APP_URL + "?action=getPeserta")
+            .then(res => res.json())
+            .then(data => {
+                daftarPeserta = data;
+                const datalist = document.getElementById('datalist-peserta');
+                data.forEach(p => {
+                    let opt = document.createElement('option');
+                    opt.value = p.id + " - " + p.name;
+                    datalist.appendChild(opt);
+                });
+                document.getElementById('loading-text').innerText = "✓ Siap digunakan. Ketik untuk mencari nama Anda.";
+                document.getElementById('loading-text').style.color = "#22c55e";
+            })
+            .catch(err => {
+                document.getElementById('loading-text').innerText = "✗ Gagal memuat data peserta.";
+                document.getElementById('loading-text').style.color = "#ef4444";
+            });
+    }
+
+    document.getElementById('input-peserta').addEventListener('input', function(e) {
+        const val = e.target.value.trim();
+        const infoDiv = document.getElementById('info-peserta');
+        const btnSubmit = document.getElementById('btn-submit');
+        const extractedID = val.split(" - ")[0].trim();
+        const match = daftarPeserta.find(p => p.id === extractedID);
+
+        if(match) {
+            verifiedID = match.id; verifiedName = match.name;
+            infoDiv.style.display = "block";
+            infoDiv.innerHTML = "✓ <strong>Terkonfirmasi:</strong><br>" + match.id + " - " + match.name;
+            btnSubmit.disabled = false;
+            e.target.style.borderColor = "#22c55e"; e.target.style.backgroundColor = "#f0fdf4";
+        } else {
+            verifiedID = ""; verifiedName = "";
+            infoDiv.style.display = "none";
+            btnSubmit.disabled = true;
+            e.target.style.borderColor = "#cbd5e1"; e.target.style.backgroundColor = "#fff";
+        }
+    });
+
+    function mulaiTimer() {
+        countdown = setInterval(() => {
+            if (isSubmitted) { clearInterval(countdown); return; }
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            document.getElementById('timer-display').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
+            if (timeRemaining <= 0) {
+                clearInterval(countdown);
+                alert("Waktu pengerjaan habis!");
+                submitQuiz(true); 
+            }
+            timeRemaining--;
+        }, 1000);
+    }
+
+    function submitQuiz(isTimeout) {
+        if(isSubmitted) return;
+        if(!verifiedID && !isTimeout) {
+            alert("Pilih identitas Anda terlebih dahulu!");
+            return;
+        }
+
+        isSubmitted = true;
+        clearInterval(countdown);
+        const durationSeconds = Math.floor((Date.now() - START_TIME) / 1000);
         let score = 0; let res = {};
+        
         for (let q in answerKey) {
             const sel = document.querySelector(`input[name="${q}"]:checked`);
             const val = sel ? sel.value : "-";
             res[q] = val;
             if(val === answerKey[q].ans) score += answerKey[q].pts;
         }
-        document.getElementById('quiz-form').style.display='none';
-        document.getElementById('result').style.display='block';
+
+        document.getElementById('quiz-form').style.display = 'none';
+        document.getElementById('timer-display').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
         document.getElementById('final-score').innerText = score;
-        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ email: email, score: score, answers: res }) });
+        document.getElementById('duration-info').innerText = "⏱️ Waktu penyelesaian: " + durationSeconds + " detik";
+
+        // MENGHILANGKAN mode: 'no-cors' AGAR BISA MEMBACA RESPONSE LEADERBOARD
+        fetch(WEB_APP_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                noPeserta: verifiedID || "TIMEOUT", 
+                namaPeserta: verifiedName || "Tanpa Nama",
+                score: score, duration: durationSeconds, answers: res 
+            }) 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success' && data.leaderboard) {
+                document.getElementById('status-pesan').style.display = 'none'; // Sembunyikan loading
+                tampilkanLeaderboard(data.leaderboard, score);
+            } else {
+                document.getElementById('status-pesan').innerHTML = '<p style="color:#ef4444; margin:0;">Gagal memuat Papan Peringkat.</p>';
+            }
+        })
+        .catch(err => {
+            document.getElementById('status-pesan').innerHTML = '<p style="color:#166534; margin:0;">✓ Jawaban berhasil disimpan (Papan Peringkat gagal dimuat).</p>';
+        });
+    }
+
+    function tampilkanLeaderboard(data, userScore) {
+        let html = '<h3 style="margin-top:40px; color:#1e293b; text-align:left;">🏆 Papan Peringkat Keseluruhan</h3>';
+        html += '<table class="leaderboard-table">';
+        html += '<tr><th>Peringkat</th><th>Nama Peserta</th><th>Skor</th><th>Waktu</th></tr>';
+
+        data.forEach((p, index) => {
+            // Sorot baris dengan warna kuning jika itu adalah user yang sedang mengerjakan
+            let isUser = (p.nama === (verifiedName || "Tanpa Nama") && p.skor === userScore) ? 'class="row-highlight"' : '';
+            
+            html += `<tr ${isUser}>`;
+            html += `<td>#${index + 1}</td>`;
+            html += `<td>${p.nama}</td>`;
+            html += `<td style="color:#2563eb; font-weight:bold;">${p.skor}</td>`;
+            html += `<td>${p.durasi} detik</td>`;
+            html += '</tr>';
+        });
+
+        html += '</table>';
+        document.getElementById('leaderboard-area').innerHTML = html;
     }
 </script>
 </body>

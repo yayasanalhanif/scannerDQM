@@ -27,6 +27,26 @@
         
         /* Efek judul lebih kecil di HP */
         h2 { font-size: 1.25rem; margin: 0; }
+
+        /* Animasi muncul perlahan */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animasi highlight saat update */
+        @keyframes highlight {
+            0% { background-color: rgba(14, 165, 233, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .row-new {
+            animation: highlight 1.5s ease-out;
+        }
     </style>
 </head>
 <body class="p-2">
@@ -68,40 +88,39 @@
     }
 
     async function updateTable() {
-        try {
-            const data = await fetchJSONP(API_URL);
-            
-            let html = "";
-            data.slice(0, 10).forEach(row => {
-    let waktu = new Date(row[0]);
-    let jam = "N/A";
-
-    // Cek apakah tanggal valid
-    if (!isNaN(waktu.getTime())) {
-        // Format: DD/MM/YYYY HH:MM (24 Jam)
-        let dd = String(waktu.getDate()).padStart(2, '0');
-        let mm = String(waktu.getMonth() + 1).padStart(2, '0');
-        let yyyy = waktu.getFullYear();
-        let hh = String(waktu.getHours()).padStart(2, '0');
-        let min = String(waktu.getMinutes()).padStart(2, '0');
-        let ss = String(waktu.getSeconds()).padStart(2, '0'); // Detik
+    try {
+        const data = await fetchJSONP(API_URL);
         
-        jam = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
-    }
+        // Simpan referensi ke tbody
+        const tbody = document.getElementById('live-data');
+        
+        let html = "";
+        data.slice(0, 10).forEach(row => {
+            // ... (logika format jam tetap sama)
+            
+            // Tambahkan class 'fade-in' pada setiap baris
+            html += `<tr class="fade-in row-new">
+                <td class="text-info" style="font-size: 0.75rem;">${jam}</td>
+                <td class="fw-bold">${row[1] || '-'}</td>
+                <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+            </tr>`;
+        });
+        
+        // Berikan efek saat data diganti
+        tbody.style.opacity = 0;
+        tbody.innerHTML = html;
+        
+        // Reset opacity agar animasi berjalan
+        setTimeout(() => {
+            tbody.style.transition = "opacity 0.5s";
+            tbody.style.opacity = 1;
+        }, 50);
 
-    html += `<tr>
-        <td class="text-info" style="font-size: 0.75rem;">${jam}</td>
-        <td class="fw-bold">${row[1] || '-'}</td>
-        <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
-    </tr>`;
-});
-            document.getElementById('live-data').innerHTML = html;
-        } catch (err) {
-            console.error("Terjadi kesalahan:", err);
-        } // <--- BAGIAN INI YANG TADI HILANG
+    } catch (err) {
+        console.error("Terjadi kesalahan:", err);
     }
-    
-    setInterval(updateTable, 1500);
+}
+      setInterval(updateTable, 1500);
     updateTable();
 </script>
 </body>

@@ -2,94 +2,74 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Kuis Tauhid Profesional</title>
+    <title>Ujian Bertauhid</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 40px; }
-        .quiz-card { background: white; max-width: 650px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; }
-        .question-box { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 25px; position: relative; }
-        .points { position: absolute; top: 15px; right: 20px; color: #888; font-size: 0.9em; }
-        h2 { color: #1a73e8; margin-top: 0; }
-        .option { display: block; padding: 12px; border: 1px solid #ddd; border-radius: 25px; margin: 10px 0; cursor: pointer; transition: 0.2s; }
-        .option:hover { background: #f8f9fa; border-color: #1a73e8; }
-        input[type="radio"] { margin-right: 15px; }
-        button { background: #1a73e8; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; }
-        #result { display: none; text-align: center; padding: 40px; }
-        .score-big { font-size: 48px; color: #1a73e8; font-weight: bold; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .quiz-card { background: white; max-width: 650px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 30px; }
+        .question-box { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .points { position: absolute; top: 15px; right: 20px; color: #888; font-size: 0.8em; }
+        .option { display: block; padding: 10px; border: 1px solid #ddd; border-radius: 20px; margin: 8px 0; cursor: pointer; }
+        .option:hover { background: #f0f7ff; }
+        button { background: #1a73e8; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; }
+        #result { display: none; text-align: center; }
+        .score-big { font-size: 64px; color: #1a73e8; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div class="quiz-card" id="main-container">
+<div class="quiz-card">
     <div id="quiz-form">
         <h2>Ujian Bertauhid</h2>
-        <input type="email" id="email" placeholder="Masukkan Email Anda" style="width:100%; padding:10px; margin-bottom:20px; box-sizing:border-box;" required>
+        <input type="email" id="email" placeholder="Email Anda" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:5px;" required>
         
-        <div class="question-box">
-            <span class="points">10 poin</span>
-            <p><strong>4. Al-Hanifiyyah artinya:</strong></p>
-            <label class="option"><input type="radio" name="q1" value="A"> a. Beribadah kepada Allah.</label>
-            <label class="option"><input type="radio" name="q1" value="B"> b. Menyembah Allah dengan ikhlas dalam beragama.</label>
-            <label class="option"><input type="radio" name="q1" value="C"> c. Taat kepada Allah.</label>
-        </div>
-
-        <div class="question-box">
-            <span class="points">10 poin</span>
-            <p><strong>5. Ibadah tidak disebut ibadah kecuali dengan:</strong></p>
-            <label class="option"><input type="radio" name="q2" value="A"> a. Shalat</label>
-            <label class="option"><input type="radio" name="q2" value="B"> b. Wudhu</label>
-            <label class="option"><input type="radio" name="q2" value="C"> c. Tauhid</label>
-        </div>
-
+            <div class="question-box">
+                <span class="points">10 poin</span>
+                <p><strong>1. kaki sapi ada</strong></p>
+                <label class="option"><input type="radio" name="q1" value="A"> a. ada 2</label>
+                <label class="option"><input type="radio" name="q1" value="B"> b. ada 3</label>
+                <label class="option"><input type="radio" name="q1" value="C"> c. ada 4</label>
+            </div>
+            <div class="question-box">
+                <span class="points">10 poin</span>
+                <p><strong>2. rukun islam ada berapa</strong></p>
+                <label class="option"><input type="radio" name="q2" value="A"> a. 1</label>
+                <label class="option"><input type="radio" name="q2" value="B"> b. 2</label>
+                <label class="option"><input type="radio" name="q2" value="C"> c. 3</label>
+            </div>
         <button onclick="submitQuiz()">Kirim Jawaban</button>
     </div>
-
     <div id="result">
-        <h2 id="msg">Terima Kasih!</h2>
-        <p>Skor Anda adalah:</p>
+        <h2>Hasil Kuis</h2>
         <div class="score-big" id="final-score">0</div>
-        <p>Jawaban Anda telah dicatat di sistem.</p>
+        <p>Jawaban Anda telah tersimpan.</p>
     </div>
 </div>
-
 <script>
-    // KUNCI JAWABAN & POIN
     const answerKey = {
-        q1: { ans: "B", pts: 10 },
-        q2: { ans: "C", pts: 10 }
-    };
-
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec"; 
+  "q1": {
+    "ans": "C",
+    "pts": 10
+  },
+  "q2": {
+    "ans": "B",
+    "pts": 10
+  }
+};
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec";
 
     function submitQuiz() {
         const email = document.getElementById('email').value;
-        if(!email) return alert("Email wajib diisi!");
-
-        let totalScore = 0;
-        let responses = {};
-
-        // Hitung skor & ambil jawaban pendek (A/B/C)
+        if(!email) return alert("Email wajib!");
+        let score = 0; let res = {};
         for (let q in answerKey) {
-            const selected = document.querySelector(`input[name="${q}"]:checked`);
-            const val = selected ? selected.value : "-";
-            responses[q] = val;
-            if(val === answerKey[q].ans) totalScore += answerKey[q].pts;
+            const sel = document.querySelector(`input[name="${q}"]:checked`);
+            const val = sel ? sel.value : "-";
+            res[q] = val;
+            if(val === answerKey[q].ans) score += answerKey[q].pts;
         }
-
-        // Tampilkan Skor ke User
-        document.getElementById('quiz-form').style.display = 'none';
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('final-score').innerText = totalScore;
-
-        // Kirim ke Google Sheets
-        fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Penting untuk Apps Script
-            body: JSON.stringify({
-                email: email,
-                score: totalScore,
-                answers: responses
-            })
-        });
+        document.getElementById('quiz-form').style.display='none';
+        document.getElementById('result').style.display='block';
+        document.getElementById('final-score').innerText = score;
+        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ email: email, score: score, answers: res }) });
     }
 </script>
 </body>

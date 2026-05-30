@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Kitab Qowai'dul Mudzaa'ah</title>
+    <title>Ujian Komprehensif</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .quiz-card { background: white; max-width: 750px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }
+        .quiz-card { background: white; max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }
         .timer-badge { position: sticky; top: 10px; background: #ef4444; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; float: right; z-index: 100; box-shadow: 0 2px 10px rgba(239,68,68,0.3); }
         .question-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; margin-bottom: 25px; position: relative; background: #ffffff; }
         .points { position: absolute; top: 15px; right: 20px; color: #64748b; font-size: 0.85em; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
@@ -24,10 +24,16 @@
         #result, #expired-msg { display: none; text-align: center; padding: 20px; }
         .score-big { font-size: 72px; color: #2563eb; font-weight: 900; margin: 20px 0; }
         #loading-text { font-size: 13px; color: #64748b; margin-top: 8px; display: block; }
-        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; text-align: left; }
-        .leaderboard-table th { background: #f1f5f9; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #334155; }
-        .leaderboard-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        .row-highlight { background: #fef9c3; font-weight: bold; }
+        
+        /* CSS LEADERBOARD LIVE */
+        .leaderboard-header { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 10px; }
+        .live-badge { background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        .leaderboard-table th { background: #f8fafc; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #334155; }
+        .leaderboard-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .row-highlight { background: #fef9c3; font-weight: bold; border-left: 4px solid #eab308; }
+        .rank-1 { font-size: 20px; }
     </style>
 </head>
 <body>
@@ -40,7 +46,7 @@
     <div id="quiz-area" style="display:none;">
         <div class="timer-badge" id="timer-display">--:--</div>
         <div id="quiz-form">
-            <h2 style="color:#1e293b; margin-top:0;">Quiz Kitab Qowai'dul Mudzaa'ah</h2>
+            <h2 style="color:#1e293b; margin-top:0;">Ujian Komprehensif</h2>
             <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:20px;">
             
             <div class="verification-box">
@@ -67,22 +73,6 @@
                 <label class="option"><input type="radio" name="q2" value="C"> <strong>C.</strong> kamu</label>
                 
                 </div>
-                <div class="question-box">
-                    <span class="points">10 poin</span>
-                    <p style="margin-top:0; font-size:16px;"><strong>3. Ada berapa kaidah dalam kitab Qowa'idul Mudzaa'ah?</strong></p>
-                    <label class="option"><input type="radio" name="q3" value="A"> <strong>A.</strong> 126</label>
-                <label class="option"><input type="radio" name="q3" value="B"> <strong>B.</strong> 127</label>
-                <label class="option"><input type="radio" name="q3" value="C"> <strong>C.</strong> 128</label>
-                
-                </div>
-                <div class="question-box">
-                    <span class="points">10 poin</span>
-                    <p style="margin-top:0; font-size:16px;"><strong>4. Siapa penulis kitab ini?</strong></p>
-                    <label class="option"><input type="radio" name="q4" value="A"> <strong>A.</strong> saya</label>
-                <label class="option"><input type="radio" name="q4" value="B"> <strong>B.</strong> dia</label>
-                <label class="option"><input type="radio" name="q4" value="C"> <strong>C.</strong> kamu</label>
-                
-                </div>
             <button type="button" id="btn-submit" onclick="submitQuiz(false)" disabled>Kirim Jawaban Sekarang</button>
         </div>
         
@@ -93,7 +83,7 @@
             <p id="duration-info" style="font-weight:600; color:#475569; background:#f1f5f9; display:inline-block; padding:8px 15px; border-radius:20px;"></p>
             
             <div id="status-pesan" style="background:#eff6ff; padding:15px; border-radius:8px; border:1px solid #bfdbfe; margin-top:20px;">
-                <p style="color:#1d4ed8; margin:0; font-weight:600;">⏳ Sedang mengambil Papan Peringkat (Leaderboard)...</p>
+                <p style="color:#1d4ed8; margin:0; font-weight:600;">⏳ Sedang mengambil data peserta lain...</p>
             </div>
             
             <div id="leaderboard-area"></div>
@@ -110,20 +100,12 @@
   "q2": {
     "ans": "A",
     "pts": 10
-  },
-  "q3": {
-    "ans": "C",
-    "pts": 10
-  },
-  "q4": {
-    "ans": "A",
-    "pts": 10
   }
 };
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec";
-    const DEADLINE = new Date("2026-05-31T12:00").getTime(); 
+    const DEADLINE = null; 
     
-    let START_TIME, timeRemaining = 2 * 60, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown;
+    let START_TIME, timeRemaining = 1 * 60, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;
 
     window.onload = function() {
         if (DEADLINE && Date.now() > DEADLINE) {
@@ -149,8 +131,7 @@
                 });
                 document.getElementById('loading-text').innerText = "✓ Siap digunakan. Ketik untuk mencari nama Anda.";
                 document.getElementById('loading-text').style.color = "#22c55e";
-            })
-            .catch(err => {
+            }).catch(err => {
                 document.getElementById('loading-text').innerText = "✗ Gagal memuat data peserta.";
                 document.getElementById('loading-text').style.color = "#ef4444";
             });
@@ -192,6 +173,17 @@
         }, 1000);
     }
 
+    function fetchLiveLeaderboard(userScore) {
+        fetch(WEB_APP_URL + "?action=getLeaderboard")
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success' && data.leaderboard) {
+                document.getElementById('status-pesan').style.display = 'none'; 
+                tampilkanLeaderboard(data.leaderboard, userScore);
+            }
+        }).catch(e => console.log("Gagal menyinkronkan data live"));
+    }
+
     function submitQuiz(isTimeout) {
         if(isSubmitted) return;
         if(!verifiedID && !isTimeout) {
@@ -217,7 +209,6 @@
         document.getElementById('final-score').innerText = score;
         document.getElementById('duration-info').innerText = "⏱️ Waktu penyelesaian: " + durationSeconds + " detik";
 
-        // MENGHILANGKAN mode: 'no-cors' AGAR BISA MEMBACA RESPONSE LEADERBOARD
         fetch(WEB_APP_URL, { 
             method: 'POST', 
             body: JSON.stringify({ 
@@ -228,29 +219,37 @@
         })
         .then(response => response.json())
         .then(data => {
-            if(data.status === 'success' && data.leaderboard) {
-                document.getElementById('status-pesan').style.display = 'none'; // Sembunyikan loading
-                tampilkanLeaderboard(data.leaderboard, score);
+            if(data.status === 'success') {
+                fetchLiveLeaderboard(score);
+                livePolling = setInterval(() => {
+                    fetchLiveLeaderboard(score);
+                }, 10000);
+                
             } else {
                 document.getElementById('status-pesan').innerHTML = '<p style="color:#ef4444; margin:0;">Gagal memuat Papan Peringkat.</p>';
             }
         })
         .catch(err => {
-            document.getElementById('status-pesan').innerHTML = '<p style="color:#166534; margin:0;">✓ Jawaban berhasil disimpan (Papan Peringkat gagal dimuat).</p>';
+            document.getElementById('status-pesan').innerHTML = '<p style="color:#166534; margin:0;">✓ Jawaban tersimpan secara offline.</p>';
         });
     }
 
     function tampilkanLeaderboard(data, userScore) {
-        let html = '<h3 style="margin-top:40px; color:#1e293b; text-align:left;">🏆 Papan Peringkat Keseluruhan</h3>';
+        let html = '<div class="leaderboard-header">';
+        html += '<h3 style="color:#1e293b; margin:0;">🏆 Peringkat Keseluruhan</h3>';
+        html += '<span class="live-badge">🔴 LIVE UPDATE</span>';
+        html += '</div>';
+        
         html += '<table class="leaderboard-table">';
-        html += '<tr><th>Peringkat</th><th>Nama Peserta</th><th>Skor</th><th>Waktu</th></tr>';
+        html += '<tr><th>Rank</th><th>No Peserta</th><th>Nama</th><th>Skor</th><th>Waktu</th></tr>';
 
         data.forEach((p, index) => {
-            // Sorot baris dengan warna kuning jika itu adalah user yang sedang mengerjakan
             let isUser = (p.nama === (verifiedName || "Tanpa Nama") && p.skor === userScore) ? 'class="row-highlight"' : '';
+            let rankMedal = index === 0 ? "🥇" : (index === 1 ? "🥈" : (index === 2 ? "🥉" : "#" + (index + 1)));
             
             html += `<tr ${isUser}>`;
-            html += `<td>#${index + 1}</td>`;
+            html += `<td class="${index < 3 ? 'rank-1' : ''}">${rankMedal}</td>`;
+            html += `<td>${p.noPeserta || "-"}</td>`;
             html += `<td>${p.nama}</td>`;
             html += `<td style="color:#2563eb; font-weight:bold;">${p.skor}</td>`;
             html += `<td>${p.durasi} detik</td>`;

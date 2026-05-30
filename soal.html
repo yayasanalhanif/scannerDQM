@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian Komprehensif</title>
+    <title>Ujian Qowa'idul Mudzaa'ah</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .quiz-card { background: white; max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }
@@ -46,7 +46,7 @@
     <div id="quiz-area" style="display:none;">
         <div class="timer-badge" id="timer-display">--:--</div>
         <div id="quiz-form">
-            <h2 style="color:#1e293b; margin-top:0;">Ujian Komprehensif</h2>
+            <h2 style="color:#1e293b; margin-top:0;">Ujian Qowa'idul Mudzaa'ah</h2>
             <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:20px;">
             
             <div class="verification-box">
@@ -71,6 +71,22 @@
                     <label class="option"><input type="radio" name="q2" value="A"> <strong>A.</strong> saya</label>
                 <label class="option"><input type="radio" name="q2" value="B"> <strong>B.</strong> dia</label>
                 <label class="option"><input type="radio" name="q2" value="C"> <strong>C.</strong> kamu</label>
+                
+                </div>
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>3. Ada berapa kaidah dalam kitab Qowa'idul Mudzaa'ah?</strong></p>
+                    <label class="option"><input type="radio" name="q3" value="A"> <strong>A.</strong> 126</label>
+                <label class="option"><input type="radio" name="q3" value="B"> <strong>B.</strong> 127</label>
+                <label class="option"><input type="radio" name="q3" value="C"> <strong>C.</strong> 128</label>
+                
+                </div>
+                <div class="question-box">
+                    <span class="points">10 poin</span>
+                    <p style="margin-top:0; font-size:16px;"><strong>4. Siapa penulis kitab ini?</strong></p>
+                    <label class="option"><input type="radio" name="q4" value="A"> <strong>A.</strong> saya</label>
+                <label class="option"><input type="radio" name="q4" value="B"> <strong>B.</strong> dia</label>
+                <label class="option"><input type="radio" name="q4" value="C"> <strong>C.</strong> kamu</label>
                 
                 </div>
             <button type="button" id="btn-submit" onclick="submitQuiz(false)" disabled>Kirim Jawaban Sekarang</button>
@@ -100,10 +116,18 @@
   "q2": {
     "ans": "A",
     "pts": 10
+  },
+  "q3": {
+    "ans": "C",
+    "pts": 10
+  },
+  "q4": {
+    "ans": "A",
+    "pts": 10
   }
 };
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec";
-    const DEADLINE = null; 
+    const DEADLINE = new Date("2026-05-31T12:00").getTime(); 
     
     let START_TIME, timeRemaining = 1 * 60, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;
 

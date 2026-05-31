@@ -53,12 +53,13 @@
             
             <div id="login-section" class="verification-box">
                 <h3 style="color:#334155; margin-top:0;">Selamat Datang!</h3>
-                <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Silakan verifikasi identitas Anda sebelum memulai ujian.</p>
+                <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Silakan masukkan nomor Peserta Anda sebelum memulai mengerjakan soal.</p>
                 <input type="text" id="input-peserta" list="datalist-peserta" class="search-input" placeholder="Ketik ID atau Nama Anda..." autocomplete="off">
                 <datalist id="datalist-peserta"></datalist>
                 <span id="loading-text">Menyinkronkan data dengan server...</span>
                 <div id="info-peserta" class="info-display info-success"></div>
-                <button type="button" id="btn-start" onclick="mulaiUjian()" style="margin-top:20px; background:#10b981; font-size:18px; padding:18px;" disabled>MULAI QUIZ 🚀</button>
+                <button type="button" id="btn-start" onclick="mulaiUjian()" style="margin-top:20px; background:#10b981; font-size:18px; padding:18px;" disabled>KERJAKAN SOAL 🚀</button>
+                <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Waktu akan mulai dihitung sejak tombol diklik</p>
             </div>
 
             <div id="questions-section" style="display:none;">

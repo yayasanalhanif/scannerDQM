@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Kehadiran Peserta DQM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* TEMA TERANG (LIGHT MODE) */
         body { 
-            background: #050a14; 
-            color: #e2e8f0; 
+            background: #f4f7f6; /* Abu-abu sangat terang */
+            color: #1e293b; 
             font-family: 'Orbitron', sans-serif; 
             overflow-x: hidden; 
             margin: 0; 
@@ -19,96 +20,104 @@
         
         /* WADAH JUDUL */
         .title-wrapper {
-            background: linear-gradient(90deg, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.1) 100%);
-            border-bottom: 3px solid #0ea5e9;
-            padding: 30px 15px; /* Padding diperbesar agar animasi tidak terpotong */
+            background: #ffffff;
+            border-bottom: 4px solid #2563eb;
+            padding: 50px 15px; 
             margin-bottom: 20px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        /* ANIMASI JUDUL TERBELAH (ADAPTASI) */
+        /* EFEK JUDUL TERBELAH */
         h2.split-title {
             margin: 0 auto; 
             padding: 0;
             position: relative;
             display: inline-block;
-            font-size: 3rem; /* Disesuaikan agar muat di layar */
-            color: transparent;
+            font-size: 3.5rem; 
+            color: transparent; /* Teks asli dibuat transparan */
             text-transform: uppercase;
+            font-family: Consolas, monospace; /* Sesuai request efek */
+            font-weight: bold;
             cursor: pointer;
-            height: 1.2em;
         }
         
-        h2.split-title span:nth-child(1) {
+        /* Teks Penyangga (Agar tinggi container tidak 0) */
+        .base-text {
+            visibility: hidden; 
+        }
+
+        h2.split-title span:nth-child(2) {
             position: absolute;
             top: 0; left: 0; right: 0;
-            color: #fff; /* Diubah jadi putih */
+            color: #000; /* Warna hitam */
             transition: 0.5s;
             clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
             overflow: hidden;
         }
-        h2.split-title:hover span:nth-child(1) {
-            transform: translateY(-15px); 
-        }
-        
-        h2.split-title span:nth-child(2) {
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            color: #fff; /* Diubah jadi putih */
-            transition: 0.5s;
-            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-            overflow: hidden;
-        }
         h2.split-title:hover span:nth-child(2) {
-            transform: translateY(15px); 
+            transform: translateY(-18px); 
         }
         
         h2.split-title span:nth-child(3) {
             position: absolute;
-            top: 50%; left: 0;
-            transform: translateY(-50%) scaleY(0);
-            width: 100%; 
-            color: #050a14;
-            background: #0ea5e9; /* Disesuaikan tema */
-            font-size: 0.25em; 
-            font-weight: 800;
-            letter-spacing: 0.5em;
-            text-align: center;
+            top: 0; left: 0; right: 0;
+            color: #000; 
             transition: 0.5s;
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+            overflow: hidden;
         }
         h2.split-title:hover span:nth-child(3) {
+            transform: translateY(18px); 
+        }
+        
+        h2.split-title span:nth-child(4) {
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            transform: translateY(-50%) scaleY(0);
+            width: 95%; 
+            margin: 0 auto;
+            color: #000;
+            background: #ff0; /* Kuning cerah */
+            font-size: 0.25em; 
+            font-weight: 800;
+            letter-spacing: 0.7em;
+            text-align: center;
+            transition: 0.5s;
+            padding: 5px 0;
+        }
+        h2.split-title:hover span:nth-child(4) {
             transform: translateY(-50%) scaleY(1);
         }
 
-        /* GAYA TABEL UTAMA */
-        .glass { background: rgba(17, 24, 39, 0.8); border: 1px solid #334155; border-radius: 5px; }
-        .table { color: #fff !important; font-size: 0.85rem; }
-        .table thead { color: #0ea5e9; border-bottom: 2px solid #0ea5e9; }
-        .table-responsive { overflow-x: auto; overflow-y: hidden; }
+        /* GAYA TABEL TEMA TERANG */
+        .glass { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; }
+        .table { color: #334155 !important; font-size: 0.9rem; }
+        .table thead { color: #2563eb; border-bottom: 2px solid #2563eb; font-weight: bold; }
+        .table-hover tbody tr:hover { background-color: #f1f5f9; }
 
-        /* ANIMASI TABEL JATUH BERPUTAR (ADAPTASI DROPPING TEXT) */
-        @keyframes tableRoll {
+        /* ANIMASI TEKS JATUH (Diaplikasikan HANYA ke Teks, bukan Baris) */
+        @keyframes textDropRoll {
             0% {
                 opacity: 0;
-                margin-left: -30px;
-                transform: translateY(-30px) rotate(-15deg);
+                transform: translateX(-30px) rotate(-25deg);
             }
-            60% {
+            50% {
                 opacity: 1;
-                margin-left: 0px;
-                transform: translateY(5px) rotate(2deg);
+                transform: translateX(0px) rotate(5deg);
             }
             100% {
                 opacity: 1;
-                margin-left: 0px;
-                transform: translateY(0) rotate(0deg);
+                transform: translateX(0px) rotate(0deg);
             }
         }
         
-        .row-new {
-            opacity: 0; /* Sembunyikan awal sebelum animasi berjalan */
-            /* Menggunakan animasi adaptasi dari 'roll' */
-            animation: tableRoll 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        /* Pembungkus teks di dalam sel tabel */
+        .teks-jatuh {
+            display: inline-block;
+            opacity: 0; /* Awalnya tidak terlihat */
+            transform-origin: left bottom;
+            animation: textDropRoll 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
     </style>
@@ -118,17 +127,21 @@
         
         <div class="title-wrapper">
             <h2 class="split-title">
-                <span>DAFTAR KEHADIRAN</span>
+                <div class="base-text">DAFTAR KEHADIRAN</div> <span>DAFTAR KEHADIRAN</span>
                 <span>DAFTAR KEHADIRAN</span>
                 <span>PESERTA DAUROH</span>
             </h2>
         </div>
 
-        <div class="glass p-3 shadow-lg">
+        <div class="glass p-4 shadow-sm">
             <div class="table-responsive">
-                <table class="table table-hover table-sm">
+                <table class="table table-hover align-middle">
                     <thead>
-                        <tr><th>WAKTU</th><th>ID</th><th>NAMA PESERTA</th></tr>
+                        <tr>
+                            <th>WAKTU</th>
+                            <th>ID PESERTA</th>
+                            <th>NAMA PESERTA</th>
+                        </tr>
                     </thead>
                     <tbody id="live-data"></tbody>
                 </table>
@@ -162,7 +175,6 @@
                     if (!tbody) return;
 
                     let html = "";
-                    // Menambahkan index pada forEach untuk membuat delay berurutan
                     data.slice(0, 100).forEach((row, index) => {
                         let waktu = new Date(row[0]);
                         let jam = "N/A";
@@ -176,13 +188,20 @@
                             jam = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
                         }
                         
-                        // Menambahkan style animation-delay agar jatuh bergantian seperti efek aslinya
-                        let delay = index * 0.1; // Selisih 0.1 detik antar baris
+                        // KUNCI: Animasi diterapkan ke dalam <div> teks-jatuh, bukan <tr>
+                        // Delay bertambah sedikit demi sedikit per sel
+                        let delayBase = index * 0.15; 
                         
-                        html += `<tr class="row-new" style="animation-delay: ${delay}s">
-                            <td style="font-size: 0.75rem;">${jam}</td>
-                            <td class="fw-bold">${row[1] || '-'}</td>
-                            <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
+                        html += `<tr>
+                            <td class="text-secondary" style="font-size: 0.8rem;">
+                                <div class="teks-jatuh" style="animation-delay: ${delayBase}s">${jam}</div>
+                            </td>
+                            <td class="fw-bold text-primary">
+                                <div class="teks-jatuh" style="animation-delay: ${delayBase + 0.05}s">${row[1] || '-'}</div>
+                            </td>
+                            <td class="text-truncate" style="max-width: 200px;">
+                                <div class="teks-jatuh" style="animation-delay: ${delayBase + 0.1}s">${row[2] || '-'}</div>
+                            </td>
                         </tr>`;
                     });
                     
@@ -192,7 +211,6 @@
                 }
             }
             
-            // Interval refresh diatur agar tidak bertabrakan dengan durasi panjang animasi
             setInterval(updateTable, 5000); 
             updateTable();
         });

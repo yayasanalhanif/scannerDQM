@@ -81,7 +81,7 @@
                     if (!tbody) return;
 
                     let html = "";
-                    data.slice(0, 10).forEach(row => {
+                    data.slice(0, 100).forEach(row => {
                         let waktu = new Date(row[0]);
                         let jam = "N/A";
                         if (!isNaN(waktu.getTime())) {

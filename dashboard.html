@@ -39,7 +39,7 @@
         /* Kelas untuk membungkus teks */
         .tali-berayun {
             display: inline-block;
-            font-size: 32px; /* Sesuaikan ukuran teks Om */
+            font-size: 32px;
             font-weight: bold;
             color: #3b82f6;
         }
@@ -48,36 +48,23 @@
         .tali-berayun span {
             display: inline-block;
             opacity: 0;
-            /* Titik tumpu ayunan ada di atas (seperti tali digantung) */
             transform-origin: top left; 
-            /* Panggil animasi 'swingDrop' */
             animation: swingDrop 1s ease-out forwards;
         }
         
-        /* Keyframes untuk efek jatuh berayun (seperti bandul/tali) */
+        /* Keyframes untuk efek jatuh berayun */
         @keyframes swingDrop {
-            0% {
-                opacity: 0;
-                transform: rotateZ(-90deg); /* Terlipat ke atas */
-            }
-            40% {
-                opacity: 1;
-                transform: rotateZ(20deg); /* Jatuh kelewat batas (efek pantulan) */
-            }
-            70% {
-                transform: rotateZ(-10deg); /* Mengayun balik sedikit */
-            }
-            100% {
-                opacity: 1;
-                transform: rotateZ(0deg); /* Berhenti di posisi normal (lurus) */
-            }
+            0% { opacity: 0; transform: rotateZ(-90deg); }
+            40% { opacity: 1; transform: rotateZ(20deg); }
+            70% { transform: rotateZ(-10deg); }
+            100% { opacity: 1; transform: rotateZ(0deg); }
         }
     </style>
 </head>
 <body class="p-2">
     <div class="container-fluid">
         <div class="title-wrapper text-center">
-            <h2 class="text-uppercase">DAFTAR KEHADIRAN PESERTA DAUROH</h2>
+            <h2 class="text-uppercase text-white">DAFTAR KEHADIRAN PESERTA DAUROH</h2>
         </div>
         <div class="tali-berayun" id="teks-dashboard">SELAMAT DATANG DI DASHBOARD</div>
 
@@ -132,8 +119,9 @@
                             jam = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
                         }
                         
+                        // Menghapus text-info dari tag <td> pertama agar warnanya seragam dengan kolom sebelahnya
                         html += `<tr class="fade-in row-new">
-                            <td class="text-info" style="font-size: 0.75rem;">${jam}</td>
+                            <td style="font-size: 0.75rem;">${jam}</td>
                             <td class="fw-bold">${row[1] || '-'}</td>
                             <td class="text-truncate" style="max-width: 150px;">${row[2] || '-'}</td>
                         </tr>`;
@@ -154,23 +142,18 @@
             updateTable();
         });
 
-    document.addEventListener("DOMContentLoaded", function() {
-    const elemenTeks = document.getElementById('teks-dashboard');
-    const teks = elemenTeks.innerText;
-    elemenTeks.innerHTML = ''; // Kosongkan teks asli
+        document.addEventListener("DOMContentLoaded", function() {
+            const elemenTeks = document.getElementById('teks-dashboard');
+            const teks = elemenTeks.innerText;
+            elemenTeks.innerHTML = ''; 
 
-    // Pecah teks menjadi huruf-huruf tunggal
-    teks.split('').forEach((huruf, index) => {
-        let span = document.createElement('span');
-        // Jika spasi, ubah jadi karakter spasi HTML agar tidak hilang
-        span.innerHTML = huruf === ' ' ? '&nbsp;' : huruf; 
-        
-        // Kunci efek merambat: Delay bertambah 0.05 detik per huruf
-        span.style.animationDelay = (index * 0.05) + 's'; 
-        
-        elemenTeks.appendChild(span);
-    });
-});
-            </script>
+            teks.split('').forEach((huruf, index) => {
+                let span = document.createElement('span');
+                span.innerHTML = huruf === ' ' ? '&nbsp;' : huruf; 
+                span.style.animationDelay = (index * 0.05) + 's'; 
+                elemenTeks.appendChild(span);
+            });
+        });
+    </script>
 </body>
 </html>

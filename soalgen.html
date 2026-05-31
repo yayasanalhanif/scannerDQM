@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Generator Kuis Master - Amiza Pro v7 Revisi</title>
+    <title>Generator Kuis Master - Amiza Pro v8.4</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: white; padding: 40px; }
         .container { max-width: 900px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
@@ -29,8 +29,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>Generator Kuis Pro (v7)</h1>
-        <p>Real-time Live Leaderboard & Smart Parser</p>
+        <h1>Generator Kuis Pro (v8.4)</h1>
+        <p>Ultra Safe Parser, Minimalist History & Live Leaderboard</p>
     </div>
 
     <div class="config-box">
@@ -89,33 +89,34 @@ c. 128"></textarea>
 </div>
 
 <script>
-    let qCount = 0;
-    const alphabet = ['A', 'B', 'C', 'D', 'E'];
+    var qCount = 0;
+    var alphabet = ['A', 'B', 'C', 'D', 'E'];
 
     window.parseBulkQuestions = function() {
         try {
-            const textArea = document.getElementById('bulk-input');
-            const text = textArea.value;
+            var textArea = document.getElementById('bulk-input');
+            var text = textArea.value;
             if (!text || text.trim() === '') return alert("Kotak teks masih kosong!");
 
-            const lines = text.split('\n');
-            let questions = [], currentQ = null;
+            var lines = text.split('\n');
+            var questions = [];
+            var currentQ = null;
 
-            for (let i = 0; i < lines.length; i++) {
-                let txt = lines[i].trim();
+            for (var i = 0; i < lines.length; i++) {
+                var txt = lines[i].trim();
                 if (txt === '') continue; 
 
-                let isSoal = /^\d+[\.\)\-]?\s+/.test(txt) || /^\d+[\.\)\-]/.test(txt);
-                let isOpsi = /^[a-eA-E][\.\)\-]\s+/.test(txt) || /^[a-eA-E][\.\)\-]/.test(txt);
+                var isSoal = /^\d+[\.\)\-]?\s+/.test(txt) || /^\d+[\.\)\-]/.test(txt);
+                var isOpsi = /^[a-eA-E][\.\)\-]\s+/.test(txt) || /^[a-eA-E][\.\)\-]/.test(txt);
 
                 if (isSoal) {
                     if (currentQ) questions.push(currentQ);
-                    let cleanQ = txt.replace(/^\d+[\.\)\-]?\s*/, '');
+                    var cleanQ = txt.replace(/^\d+[\.\)\-]?\s*/, '');
                     currentQ = { q: cleanQ, opts: [] };
                 } 
                 else if (isOpsi) {
                     if (currentQ) {
-                        let cleanOpt = txt.replace(/^[a-eA-E][\.\)\-]\s*/, '');
+                        var cleanOpt = txt.replace(/^[a-eA-E][\.\)\-]\s*/, '');
                         currentQ.opts.push(cleanOpt);
                     }
                 } 
@@ -126,343 +127,392 @@ c. 128"></textarea>
                     }
                 }
             }
+            
             if (currentQ) questions.push(currentQ);
-            if (questions.length === 0) return alert("Gagal. Pastikan format penomoran dan abjad sesuai.");
+            if (questions.length === 0) return alert("Gagal mengekstrak. Pastikan format penomoran dan abjad opsi sudah sesuai contoh.");
 
-            questions.forEach(item => addQuestion(item.q, item.opts));
+            for (var j = 0; j < questions.length; j++) {
+                addQuestion(questions[j].q, questions[j].opts);
+            }
+            
             textArea.value = '';
             alert("Berhasil mengekstrak " + questions.length + " soal!");
-        } catch (error) { alert("Error sistem: " + error.message); }
+        } catch (error) { 
+            alert("Error sistem: " + error.message); 
+        }
     };
 
     window.addQuestion = function(inQText, inOptions) {
-        const defaultQText = typeof inQText === 'string' ? inQText : '';
-        const defaultOptions = Array.isArray(inOptions) ? inOptions : [];
+        var defaultQText = typeof inQText === 'string' ? inQText : '';
+        var defaultOptions = Array.isArray(inOptions) ? inOptions : [];
 
         qCount++;
-        const numChoices = parseInt(document.getElementById('num-choices').value);
-        let optionsInputsHTML = '', keyOptionsHTML = '<option value="">-- Pilih Kunci Jawaban --</option>';
+        var numChoices = parseInt(document.getElementById('num-choices').value);
+        var optionsInputsHTML = '';
+        var keyOptionsHTML = '<option value="">-- Pilih Kunci Jawaban --</option>';
 
-        for(let i = 0; i < numChoices; i++) {
-            const letter = alphabet[i];
-            let optVal = defaultOptions[i] || ''; 
+        for(var i = 0; i < numChoices; i++) {
+            var letter = alphabet[i];
+            var optVal = defaultOptions[i] || ''; 
             optVal = optVal.replace(/"/g, '&quot;'); 
 
-            optionsInputsHTML += `
-                <div class="opt-row">
-                    <span class="opt-label">${letter}.</span>
-                    <textarea placeholder="Teks opsi ${letter}" class="q-opt" data-letter="${letter}" rows="2">${optVal}</textarea>
-                </div>`;
-            keyOptionsHTML += `<option value="${letter}">Opsi ${letter}</option>`;
+            optionsInputsHTML += 
+                '<div class="opt-row">' +
+                    '<span class="opt-label">' + letter + '.</span>' +
+                    '<textarea placeholder="Teks opsi ' + letter + '" class="q-opt" data-letter="' + letter + '" rows="2">' + optVal + '</textarea>' +
+                '</div>';
+                
+            keyOptionsHTML += '<option value="' + letter + '">Opsi ' + letter + '</option>';
         }
 
-        const div = document.createElement('div');
+        var div = document.createElement('div');
         div.className = 'question-item';
-        div.id = `q-item-${qCount}`;
-        const safeQText = defaultQText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        div.id = 'q-item-' + qCount;
+        
+        var safeQText = defaultQText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-        div.innerHTML = `
-            <h4 style="margin-top:0; color:#3b82f6;">Soal #${qCount}</h4>
-            <button type="button" class="btn btn-del" onclick="removeQuestion(${qCount})">Hapus</button>
-            <textarea placeholder="Tuliskan pertanyaan di sini..." class="q-text" rows="4">${safeQText}</textarea>
-            <div style="margin: 15px 0;">${optionsInputsHTML}</div>
-            <div style="display:flex; gap:15px; align-items: center; background: #334155; padding: 15px; border-radius: 5px;">
-                <div style="flex:2;">
-                    <label style="font-size:12px; color:#94a3b8;">Kunci Jawaban:</label>
-                    <select class="q-key" style="margin:0;">${keyOptionsHTML}</select>
-                </div>
-                <div style="flex:1;">
-                    <label style="font-size:12px; color:#94a3b8;">Bobot Poin:</label>
-                    <input type="number" class="q-points" value="10" style="margin:0;">
-                </div>
-            </div>`;
+        div.innerHTML = 
+            '<h4 style="margin-top:0; color:#3b82f6;">Soal #' + qCount + '</h4>' +
+            '<button type="button" class="btn btn-del" onclick="removeQuestion(' + qCount + ')">Hapus</button>' +
+            '<textarea placeholder="Tuliskan pertanyaan di sini..." class="q-text" rows="4">' + safeQText + '</textarea>' +
+            '<div style="margin: 15px 0;">' + optionsInputsHTML + '</div>' +
+            '<div style="display:flex; gap:15px; align-items: center; background: #334155; padding: 15px; border-radius: 5px;">' +
+                '<div style="flex:2;">' +
+                    '<label style="font-size:12px; color:#94a3b8;">Kunci Jawaban:</label>' +
+                    '<select class="q-key" style="margin:0;">' + keyOptionsHTML + '</select>' +
+                '</div>' +
+                '<div style="flex:1;">' +
+                    '<label style="font-size:12px; color:#94a3b8;">Bobot Poin:</label>' +
+                    '<input type="number" class="q-points" value="10" style="margin:0;">' +
+                '</div>' +
+            '</div>';
+            
         document.getElementById('questions-container').appendChild(div);
     };
 
     window.removeQuestion = function(id) {
-        const el = document.getElementById(`q-item-${id}`);
-        if(el) el.remove();
+        var el = document.getElementById('q-item-' + id);
+        if (el) el.remove();
     };
 
     window.generateCode = function() {
         try {
-            const url = document.getElementById('gas-url').value;
-            const title = document.getElementById('quiz-title').value;
-            const timeLimit = document.getElementById('time-limit').value || 15;
-            const deadline = document.getElementById('deadline-time').value; 
+            var url = document.getElementById('gas-url').value;
+            var title = document.getElementById('quiz-title').value;
+            var timeLimit = document.getElementById('time-limit').value || 15;
+            var deadline = document.getElementById('deadline-time').value; 
             
             if(!url) return alert("URL Apps Script wajib diisi!");
             
-            const qItems = document.querySelectorAll('.question-item');
+            var qItems = document.querySelectorAll('.question-item');
             if(qItems.length === 0) return alert("Tambahkan minimal 1 soal!");
 
-            let questionsHTML = '';
-            let answerKeyJS = {};
+            var questionsHTML = '';
+            var answerKeyJS = {};
 
-            qItems.forEach((item, index) => {
-                const id = `q${index + 1}`;
-                const text = item.querySelector('.q-text').value;
-                const key = item.querySelector('.q-key').value;
-                const pts = item.querySelector('.q-points').value || 0;
+            for (var i = 0; i < qItems.length; i++) {
+                var item = qItems[i];
+                var id = 'q' + (i + 1);
+                var text = item.querySelector('.q-text').value;
+                var key = item.querySelector('.q-key').value;
+                var pts = item.querySelector('.q-points').value || 0;
 
-                let optsHTML = '';
-                item.querySelectorAll('.q-opt').forEach(opt => {
-                    const letter = opt.getAttribute('data-letter');
-                    const val = opt.value.replace(/\n/g, '<br>');
-                    optsHTML += `<label class="option"><input type="radio" name="${id}" value="${letter}"> <strong>${letter}.</strong> ${val}</label>\n                `;
-                });
-
-                const formattedText = text.replace(/\n/g, '<br>');
-                questionsHTML += `
-                <div class="question-box">
-                    <span class="points">${pts} poin</span>
-                    <p style="margin-top:0; font-size:16px;"><strong>${index + 1}. ${formattedText}</strong></p>
-                    ${optsHTML}
-                </div>`;
-                answerKeyJS[id] = { ans: key, pts: parseInt(pts) };
-            });
-
-            const deadlineStr = deadline ? `new Date("${deadline}").getTime()` : `null`;
-
-            const fullCode = `<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <style>
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .quiz-card { background: white; max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }
-        .timer-badge { position: sticky; top: 10px; background: #ef4444; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; float: right; z-index: 100; box-shadow: 0 2px 10px rgba(239,68,68,0.3); }
-        .question-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; margin-bottom: 25px; position: relative; background: #ffffff; }
-        .points { position: absolute; top: 15px; right: 20px; color: #64748b; font-size: 0.85em; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
-        .option { display: block; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 10px 0; cursor: pointer; transition: 0.2s; }
-        .option:hover { background: #f0fdf4; border-color: #22c55e; }
-        input[type="radio"] { margin-right: 10px; accent-color: #22c55e; transform: scale(1.2); }
-        .verification-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-        .info-display { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 500; display: none; }
-        .info-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .search-input { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 16px; box-sizing: border-box; transition: 0.2s; }
-        .search-input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
-        button { background: #2563eb; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.2s; }
-        button:hover:not(:disabled) { background: #1d4ed8; }
-        button:disabled { background: #94a3b8; cursor: not-allowed; }
-        #result, #expired-msg { display: none; text-align: center; padding: 20px; }
-        .score-big { font-size: 72px; color: #2563eb; font-weight: 900; margin: 20px 0; }
-        #loading-text { font-size: 13px; color: #64748b; margin-top: 8px; display: block; }
-        
-        /* CSS LEADERBOARD LIVE */
-        .leaderboard-header { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 10px; }
-        .live-badge { background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .leaderboard-table th { background: #f8fafc; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #334155; }
-        .leaderboard-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
-        .row-highlight { background: #fef9c3; font-weight: bold; border-left: 4px solid #eab308; }
-        .rank-1 { font-size: 20px; }
-    </style>
-</head>
-<body>
-<div class="quiz-card" id="main-container">
-    <div id="expired-msg">
-        <h2 style="color:#ef4444; font-size:24px;">Waktu Akses Telah Ditutup</h2>
-        <p>Mohon maaf, batas waktu untuk mengikuti ujian ini sudah terlewati.</p>
-    </div>
-
-    <div id="quiz-area" style="display:none;">
-        <div class="timer-badge" id="timer-display">--:--</div>
-        <div id="quiz-form">
-            <h2 style="color:#1e293b; margin-top:0;">${title}</h2>
-            <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:20px;">
-            
-            <div class="verification-box">
-                <label style="color:#334155; font-weight: 600; display:block; margin-bottom:8px;">Identitas Peserta:</label>
-                <input type="text" id="input-peserta" list="datalist-peserta" class="search-input" placeholder="Ketik ID atau Nama Anda di sini..." autocomplete="off">
-                <datalist id="datalist-peserta"></datalist>
-                <span id="loading-text">Menyinkronkan data dengan server...</span>
-                <div id="info-peserta" class="info-display info-success"></div>
-            </div>
-            ${questionsHTML}
-            <button type="button" id="btn-submit" onclick="submitQuiz(false)" disabled>Kirim Jawaban Sekarang</button>
-        </div>
-        
-        <div id="result">
-            <h2 style="color:#1e293b; margin-bottom:0;">Ujian Selesai</h2>
-            <p style="color:#64748b; margin-top:5px;">Skor Akhir Anda:</p>
-            <div class="score-big" id="final-score">0</div>
-            <p id="duration-info" style="font-weight:600; color:#475569; background:#f1f5f9; display:inline-block; padding:8px 15px; border-radius:20px;"></p>
-            
-            <div id="status-pesan" style="background:#eff6ff; padding:15px; border-radius:8px; border:1px solid #bfdbfe; margin-top:20px;">
-                <p style="color:#1d4ed8; margin:0; font-weight:600;">⏳ Sedang mengambil data peserta lain...</p>
-            </div>
-            
-            <div id="leaderboard-area"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const answerKey = ${JSON.stringify(answerKeyJS, null, 2)};
-    const WEB_APP_URL = "${url}";
-    const DEADLINE = ${deadlineStr}; 
-    
-    let START_TIME, timeRemaining = ${timeLimit} * 60, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;
-
-    window.onload = function() {
-        if (DEADLINE && Date.now() > DEADLINE) {
-            document.getElementById('expired-msg').style.display = 'block';
-            return; 
-        }
-        document.getElementById('quiz-area').style.display = 'block';
-        START_TIME = Date.now();
-        mulaiTimer();
-        muatDataPeserta();
-    };
-
-    function muatDataPeserta() {
-        fetch(WEB_APP_URL + "?action=getPeserta")
-            .then(res => res.json())
-            .then(data => {
-                daftarPeserta = data;
-                const datalist = document.getElementById('datalist-peserta');
-                data.forEach(p => {
-                    let opt = document.createElement('option');
-                    opt.value = p.id + " - " + p.name;
-                    datalist.appendChild(opt);
-                });
-                document.getElementById('loading-text').innerText = "✓ Siap digunakan. Ketik untuk mencari nama Anda.";
-                document.getElementById('loading-text').style.color = "#22c55e";
-            }).catch(err => {
-                document.getElementById('loading-text').innerText = "✗ Gagal memuat data peserta.";
-                document.getElementById('loading-text').style.color = "#ef4444";
-            });
-    }
-
-    document.getElementById('input-peserta').addEventListener('input', function(e) {
-        const val = e.target.value.trim();
-        const infoDiv = document.getElementById('info-peserta');
-        const btnSubmit = document.getElementById('btn-submit');
-        const extractedID = val.split(" - ")[0].trim();
-        const match = daftarPeserta.find(p => p.id === extractedID);
-
-        if(match) {
-            verifiedID = match.id; verifiedName = match.name;
-            infoDiv.style.display = "block";
-            infoDiv.innerHTML = "✓ <strong>Terkonfirmasi:</strong><br>" + match.id + " - " + match.name;
-            btnSubmit.disabled = false;
-            e.target.style.borderColor = "#22c55e"; e.target.style.backgroundColor = "#f0fdf4";
-        } else {
-            verifiedID = ""; verifiedName = "";
-            infoDiv.style.display = "none";
-            btnSubmit.disabled = true;
-            e.target.style.borderColor = "#cbd5e1"; e.target.style.backgroundColor = "#fff";
-        }
-    });
-
-    function mulaiTimer() {
-        countdown = setInterval(() => {
-            if (isSubmitted) { clearInterval(countdown); return; }
-            let m = Math.floor(timeRemaining / 60);
-            let s = timeRemaining % 60;
-            document.getElementById('timer-display').innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);
-            if (timeRemaining <= 0) {
-                clearInterval(countdown);
-                alert("Waktu pengerjaan habis!");
-                submitQuiz(true); 
-            }
-            timeRemaining--;
-        }, 1000);
-    }
-
-    function fetchLiveLeaderboard(userScore) {
-        fetch(WEB_APP_URL + "?action=getLeaderboard")
-        .then(res => res.json())
-        .then(data => {
-            if(data.status === 'success' && data.leaderboard) {
-                document.getElementById('status-pesan').style.display = 'none'; 
-                tampilkanLeaderboard(data.leaderboard, userScore);
-            }
-        }).catch(e => console.log("Gagal menyinkronkan data live"));
-    }
-
-    function submitQuiz(isTimeout) {
-        if(isSubmitted) return;
-        if(!verifiedID && !isTimeout) {
-            alert("Pilih identitas Anda terlebih dahulu!");
-            return;
-        }
-
-        isSubmitted = true;
-        clearInterval(countdown);
-        const durationSeconds = Math.floor((Date.now() - START_TIME) / 1000);
-        let score = 0; let res = {};
-        
-        for (let q in answerKey) {
-            const sel = document.querySelector(\`input[name="\${q}"]:checked\`);
-            const val = sel ? sel.value : "-";
-            res[q] = val;
-            if(val === answerKey[q].ans) score += answerKey[q].pts;
-        }
-
-        document.getElementById('quiz-form').style.display = 'none';
-        document.getElementById('timer-display').style.display = 'none';
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('duration-info').innerText = "⏱️ Waktu penyelesaian: " + durationSeconds + " detik";
-
-        fetch(WEB_APP_URL, { 
-            method: 'POST', 
-            body: JSON.stringify({ 
-                noPeserta: verifiedID || "TIMEOUT", 
-                namaPeserta: verifiedName || "Tanpa Nama",
-                score: score, duration: durationSeconds, answers: res 
-            }) 
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.status === 'success') {
-                fetchLiveLeaderboard(score);
-                livePolling = setInterval(() => {
-                    fetchLiveLeaderboard(score);
-                }, 10000);
+                var optsHTML = '';
+                var optInputs = item.querySelectorAll('.q-opt');
                 
-            } else {
-                document.getElementById('status-pesan').innerHTML = '<p style="color:#ef4444; margin:0;">Gagal memuat Papan Peringkat.</p>';
+                for (var j = 0; j < optInputs.length; j++) {
+                    var opt = optInputs[j];
+                    var letter = opt.getAttribute('data-letter');
+                    var val = opt.value.replace(/\n/g, '<br>');
+                    optsHTML += '<label class="option"><input type="radio" name="' + id + '" value="' + letter + '"> <strong>' + letter + '.</strong> ' + val + '</label>\n';
+                }
+
+                var formattedText = text.replace(/\n/g, '<br>');
+                questionsHTML += 
+                    '<div class="question-box">\n' +
+                    '    <span class="points">' + pts + ' poin</span>\n' +
+                    '    <p style="margin-top:0; font-size:16px;"><strong>' + (i + 1) + '. ' + formattedText + '</strong></p>\n' +
+                    '    ' + optsHTML + '\n' +
+                    '</div>\n';
+                    
+                answerKeyJS[id] = { ans: key, pts: parseInt(pts) };
             }
-        })
-        .catch(err => {
-            document.getElementById('status-pesan').innerHTML = '<p style="color:#166534; margin:0;">✓ Jawaban tersimpan secara offline.</p>';
-        });
-    }
 
-    function tampilkanLeaderboard(data, userScore) {
-        let html = '<div class="leaderboard-header">';
-        html += '<h3 style="color:#1e293b; margin:0;">🏆 Peringkat Keseluruhan</h3>';
-        html += '<span class="live-badge">🔴 LIVE UPDATE</span>';
-        html += '</div>';
-        
-        html += '<table class="leaderboard-table">';
-        html += '<tr><th>Rank</th><th>No Peserta</th><th>Nama</th><th>Skor</th><th>Waktu</th></tr>';
+            var deadlineStr = deadline ? 'new Date("' + deadline + '").getTime()' : 'null';
 
-        data.forEach((p, index) => {
-            let isUser = (p.nama === (verifiedName || "Tanpa Nama") && p.skor === userScore) ? 'class="row-highlight"' : '';
-            let rankMedal = index === 0 ? "🥇" : (index === 1 ? "🥈" : (index === 2 ? "🥉" : "#" + (index + 1)));
-            
-            html += \`<tr \${isUser}>\`;
-            html += \`<td class="\${index < 3 ? 'rank-1' : ''}">\${rankMedal}</td>\`;
-            html += \`<td>\${p.noPeserta || "-"}</td>\`;
-            html += \`<td>\${p.nama}</td>\`;
-            html += \`<td style="color:#2563eb; font-weight:bold;">\${p.skor}</td>\`;
-            html += \`<td>\${p.durasi} detik</td>\`;
-            html += '</tr>';
-        });
-
-        html += '</table>';
-        document.getElementById('leaderboard-area').innerHTML = html;
-    }
-\x3C/script>
-</body>
-</html>`;
+            // Menyusun kode output menggunakan Array Join agar 100% aman dari engine apapun
+            var fullCode = [
+                '<!DOCTYPE html>',
+                '<html lang="id">',
+                '<head>',
+                '    <meta charset="UTF-8">',
+                '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+                '    <title>' + title + '</title>',
+                '    <style>',
+                '        body { font-family: \'Segoe UI\', system-ui, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }',
+                '        .quiz-card { background: white; max-width: 800px; width: 100%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; position: relative; box-sizing: border-box; }',
+                '        .timer-badge { position: sticky; top: 10px; background: #ef4444; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; float: right; z-index: 100; box-shadow: 0 2px 10px rgba(239,68,68,0.3); display: none; }',
+                '        .question-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; margin-bottom: 25px; position: relative; background: #ffffff; }',
+                '        .points { position: absolute; top: 15px; right: 20px; color: #64748b; font-size: 0.85em; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }',
+                '        .option { display: block; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 10px 0; cursor: pointer; transition: 0.2s; }',
+                '        .option:hover { background: #f0fdf4; border-color: #22c55e; }',
+                '        input[type="radio"] { margin-right: 10px; accent-color: #22c55e; transform: scale(1.2); }',
+                '        .verification-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 30px; border-radius: 8px; margin-bottom: 30px; text-align: center; }',
+                '        .info-display { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: 500; display: none; text-align: left; }',
+                '        .info-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }',
+                '        .search-input { width: 100%; padding: 15px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 18px; box-sizing: border-box; transition: 0.2s; text-align: center; }',
+                '        .search-input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }',
+                '        button { background: #2563eb; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.2s; }',
+                '        button:hover:not(:disabled) { background: #1d4ed8; }',
+                '        button:disabled { background: #94a3b8; cursor: not-allowed; }',
+                '        #result, #expired-msg { display: none; text-align: center; padding: 20px; }',
+                '        .score-big { font-size: 72px; color: #2563eb; font-weight: 900; margin: 20px 0; }',
+                '        #loading-text { font-size: 13px; color: #64748b; margin-top: 8px; display: block; }',
+                '        ',
+                '        .history-box { text-align: left; background: #f1f5f9; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 6px; margin-top: 25px; margin-bottom: 25px; }',
+                '        .history-title { color: #64748b; font-size: 13px; margin: 0 0 8px 0; font-weight: 600; }',
+                '        .history-content { font-family: \'Courier New\', Courier, monospace; color: #334155; font-size: 15px; font-weight: 600; letter-spacing: 1px; line-height: 1.8; word-wrap: break-word; }',
+                '        ',
+                '        .leaderboard-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 15px; border-top: 2px solid #e2e8f0; padding-top: 30px; }',
+                '        .live-badge { background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; animation: blink 1.5s infinite; }',
+                '        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }',
+                '        .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }',
+                '        .leaderboard-table th { background: #f8fafc; padding: 12px; border-bottom: 2px solid #cbd5e1; color: #334155; }',
+                '        .leaderboard-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }',
+                '        .row-highlight { background: #fef9c3; font-weight: bold; border-left: 4px solid #eab308; }',
+                '        .rank-1 { font-size: 20px; }',
+                '    </style>',
+                '</head>',
+                '<body>',
+                '<div class="quiz-card" id="main-container">',
+                '    <div id="expired-msg">',
+                '        <h2 style="color:#ef4444; font-size:24px;">Waktu Akses Telah Ditutup</h2>',
+                '        <p>Mohon maaf, batas waktu untuk mengikuti ujian ini sudah terlewati.</p>',
+                '    </div>',
+                '    <div id="quiz-area" style="display:none;">',
+                '        <div class="timer-badge" id="timer-display">--:--</div>',
+                '        <div id="quiz-form">',
+                '            <h2 style="color:#1e293b; margin-top:0; text-align:center;">' + title + '</h2>',
+                '            <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:20px;">',
+                '            ',
+                '            <div id="login-section" class="verification-box">',
+                '                <h3 style="color:#334155; margin-top:0;">Selamat Datang!</h3>',
+                '                <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Silakan verifikasi identitas Anda sebelum memulai ujian.</p>',
+                '                <input type="text" id="input-peserta" list="datalist-peserta" class="search-input" placeholder="Ketik ID atau Nama Anda..." autocomplete="off">',
+                '                <datalist id="datalist-peserta"></datalist>',
+                '                <span id="loading-text">Menyinkronkan data dengan server...</span>',
+                '                <div id="info-peserta" class="info-display info-success"></div>',
+                '                <button type="button" id="btn-start" onclick="mulaiUjian()" style="margin-top:20px; background:#10b981; font-size:18px; padding:18px;" disabled>MULAI QUIZ 🚀</button>',
+                '            </div>',
+                '',
+                '            <div id="questions-section" style="display:none;">',
+                '                ' + questionsHTML,
+                '                <button type="button" id="btn-submit" onclick="submitQuiz(false)">Kirim Jawaban Sekarang</button>',
+                '            </div>',
+                '        </div>',
+                '        ',
+                '        <div id="result">',
+                '            <h2 style="color:#1e293b; margin-bottom:0;">Ujian Selesai</h2>',
+                '            <p style="color:#64748b; margin-top:5px;">Skor Akhir Anda:</p>',
+                '            <div class="score-big" id="final-score">0</div>',
+                '            <p id="duration-info" style="font-weight:600; color:#475569; background:#f1f5f9; display:inline-block; padding:8px 15px; border-radius:20px;"></p>',
+                '            ',
+                '            <div class="history-box">',
+                '                <p class="history-title">Histori Jawaban Anda:</p>',
+                '                <div id="history-content" class="history-content"></div>',
+                '            </div>',
+                '',
+                '            <div id="status-pesan" style="background:#eff6ff; padding:15px; border-radius:8px; border:1px solid #bfdbfe; margin-top:20px;">',
+                '                <p style="color:#1d4ed8; margin:0; font-weight:600;">⏳ Sedang mengambil data peserta lain...</p>',
+                '            </div>',
+                '            ',
+                '            <div id="leaderboard-area"></div>',
+                '        </div>',
+                '    </div>',
+                '</div>',
+                '',
+                '<script>',
+                '    const answerKey = ' + JSON.stringify(answerKeyJS, null, 2) + ';',
+                '    const WEB_APP_URL = "' + url + '";',
+                '    const DEADLINE = ' + deadlineStr + ';',
+                '    ',
+                '    let START_TIME, timeRemaining = ' + (timeLimit * 60) + ', verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;',
+                '',
+                '    window.onload = function() {',
+                '        if (DEADLINE && Date.now() > DEADLINE) {',
+                '            document.getElementById("expired-msg").style.display = "block";',
+                '            return; ',
+                '        }',
+                '        document.getElementById("quiz-area").style.display = "block";',
+                '        muatDataPeserta();',
+                '    };',
+                '',
+                '    function muatDataPeserta() {',
+                '        fetch(WEB_APP_URL + "?action=getPeserta")',
+                '            .then(res => res.json())',
+                '            .then(data => {',
+                '                daftarPeserta = data;',
+                '                const datalist = document.getElementById("datalist-peserta");',
+                '                data.forEach(p => {',
+                '                    let opt = document.createElement("option");',
+                '                    opt.value = p.id + " - " + p.name;',
+                '                    datalist.appendChild(opt);',
+                '                });',
+                '                document.getElementById("loading-text").innerText = "✓ Siap digunakan. Ketik untuk mencari nama Anda.";',
+                '                document.getElementById("loading-text").style.color = "#22c55e";',
+                '            }).catch(err => {',
+                '                document.getElementById("loading-text").innerText = "✗ Gagal memuat data peserta.";',
+                '                document.getElementById("loading-text").style.color = "#ef4444";',
+                '            });',
+                '    }',
+                '',
+                '    document.getElementById("input-peserta").addEventListener("input", function(e) {',
+                '        const val = e.target.value.trim();',
+                '        const infoDiv = document.getElementById("info-peserta");',
+                '        const btnStart = document.getElementById("btn-start");',
+                '        const extractedID = val.split(" - ")[0].trim();',
+                '        const match = daftarPeserta.find(p => p.id === extractedID);',
+                '',
+                '        if(match) {',
+                '            verifiedID = match.id; verifiedName = match.name;',
+                '            infoDiv.style.display = "block";',
+                '            infoDiv.innerHTML = "✓ <strong>Terkonfirmasi:</strong><br>" + match.id + " - " + match.name;',
+                '            btnStart.disabled = false;',
+                '            e.target.style.borderColor = "#22c55e"; e.target.style.backgroundColor = "#f0fdf4";',
+                '        } else {',
+                '            verifiedID = ""; verifiedName = "";',
+                '            infoDiv.style.display = "none";',
+                '            btnStart.disabled = true;',
+                '            e.target.style.borderColor = "#cbd5e1"; e.target.style.backgroundColor = "#fff";',
+                '        }',
+                '    });',
+                '',
+                '    function mulaiUjian() {',
+                '        document.getElementById("login-section").style.display = "none";',
+                '        document.getElementById("questions-section").style.display = "block";',
+                '        document.getElementById("timer-display").style.display = "block";',
+                '        document.getElementById("input-peserta").disabled = true;',
+                '',
+                '        START_TIME = Date.now();',
+                '        mulaiTimer();',
+                '    }',
+                '',
+                '    function mulaiTimer() {',
+                '        let mInit = Math.floor(timeRemaining / 60);',
+                '        let sInit = timeRemaining % 60;',
+                '        document.getElementById("timer-display").innerText = (mInit < 10 ? "0"+mInit : mInit) + ":" + (sInit < 10 ? "0"+sInit : sInit);',
+                '',
+                '        countdown = setInterval(() => {',
+                '            if (isSubmitted) { clearInterval(countdown); return; }',
+                '            timeRemaining--;',
+                '            ',
+                '            let m = Math.floor(timeRemaining / 60);',
+                '            let s = timeRemaining % 60;',
+                '            document.getElementById("timer-display").innerText = (m < 10 ? "0"+m : m) + ":" + (s < 10 ? "0"+s : s);',
+                '            ',
+                '            if (timeRemaining <= 0) {',
+                '                clearInterval(countdown);',
+                '                alert("Waktu pengerjaan habis!");',
+                '                submitQuiz(true); ',
+                '            }',
+                '        }, 1000);',
+                '    }',
+                '',
+                '    function fetchLiveLeaderboard(userScore) {',
+                '        fetch(WEB_APP_URL + "?action=getLeaderboard")',
+                '        .then(res => res.json())',
+                '        .then(data => {',
+                '            if(data.status === "success" && data.leaderboard) {',
+                '                document.getElementById("status-pesan").style.display = "none"; ',
+                '                tampilkanLeaderboard(data.leaderboard, userScore);',
+                '            }',
+                '        }).catch(e => console.log("Gagal menyinkronkan data live"));',
+                '    }',
+                '',
+                '    function submitQuiz(isTimeout) {',
+                '        if(isSubmitted) return;',
+                '        ',
+                '        isSubmitted = true;',
+                '        clearInterval(countdown);',
+                '        const durationSeconds = Math.floor((Date.now() - START_TIME) / 1000);',
+                '        ',
+                '        let score = 0; ',
+                '        let res = {};',
+                '        let historyStr = "";',
+                '        let qNum = 1;',
+                '        ',
+                '        for (let q in answerKey) {',
+                '            const sel = document.querySelector(\'input[name="\' + q + \'"]:checked\');',
+                '            const val = sel ? sel.value : "-";',
+                '            res[q] = val;',
+                '            if(val === answerKey[q].ans) score += answerKey[q].pts;',
+                '            ',
+                '            historyStr += qNum + ":" + val + "  ";',
+                '            qNum++;',
+                '        }',
+                '',
+                '        document.getElementById("quiz-form").style.display = "none";',
+                '        document.getElementById("timer-display").style.display = "none";',
+                '        document.getElementById("result").style.display = "block";',
+                '        document.getElementById("final-score").innerText = score;',
+                '        document.getElementById("duration-info").innerText = "⏱️ Waktu penyelesaian: " + durationSeconds + " detik";',
+                '        ',
+                '        document.getElementById("history-content").innerText = historyStr.trim();',
+                '',
+                '        fetch(WEB_APP_URL, { ',
+                '            method: "POST", ',
+                '            body: JSON.stringify({ ',
+                '                noPeserta: verifiedID || "TIMEOUT", ',
+                '                namaPeserta: verifiedName || "Tanpa Nama",',
+                '                score: score, duration: durationSeconds, answers: res ',
+                '            }) ',
+                '        })',
+                '        .then(response => response.json())',
+                '        .then(data => {',
+                '            if(data.status === "success") {',
+                '                fetchLiveLeaderboard(score);',
+                '                livePolling = setInterval(() => {',
+                '                    fetchLiveLeaderboard(score);',
+                '                }, 10000);',
+                '                ',
+                '            } else {',
+                '                document.getElementById("status-pesan").innerHTML = "<p style=\'color:#ef4444; margin:0;\'>Gagal memuat Papan Peringkat.</p>";',
+                '            }',
+                '        })',
+                '        .catch(err => {',
+                '            document.getElementById("status-pesan").innerHTML = "<p style=\'color:#166534; margin:0;\'>✓ Jawaban tersimpan secara offline.</p>";',
+                '        });',
+                '    }',
+                '',
+                '    function tampilkanLeaderboard(data, userScore) {',
+                '        let html = "<div class=\'leaderboard-header\'>";',
+                '        html += "<h3 style=\'color:#1e293b; margin:0;\'>🏆 Peringkat Keseluruhan</h3>";',
+                '        html += "<span class=\'live-badge\'>🔴 LIVE UPDATE</span>";',
+                '        html += "</div>";',
+                '        ',
+                '        html += "<table class=\'leaderboard-table\'>";',
+                '        html += "<tr><th>Rank</th><th>No Peserta</th><th>Nama</th><th>Skor</th><th>Waktu</th></tr>";',
+                '',
+                '        data.forEach((p, index) => {',
+                '            let isUser = (p.nama === (verifiedName || "Tanpa Nama") && p.skor === userScore) ? "class=\'row-highlight\'" : "";',
+                '            let rankMedal = index === 0 ? "🥇" : (index === 1 ? "🥈" : (index === 2 ? "🥉" : "#" + (index + 1)));',
+                '            ',
+                '            html += "<tr " + isUser + ">";',
+                '            html += "<td class=\'" + (index < 3 ? "rank-1" : "") + "\'>" + rankMedal + "</td>";',
+                '            html += "<td>" + (p.noPeserta || "-") + "</td>";',
+                '            html += "<td>" + p.nama + "</td>";',
+                '            html += "<td style=\'color:#2563eb; font-weight:bold;\'>" + p.skor + "</td>";',
+                '            html += "<td>" + p.durasi + " detik</td>";',
+                '            html += "</tr>";',
+                '        });',
+                '',
+                '        html += "</table>";',
+                '        document.getElementById("leaderboard-area").innerHTML = html;',
+                '    }',
+                '</sc' + 'ript>',
+                '</body>',
+                '</html>'
+            ].join('\n');
 
             document.getElementById('code-output').innerText = fullCode;
             document.getElementById('output-area').style.display = 'block';
@@ -472,8 +522,10 @@ c. 128"></textarea>
     };
 
     window.copyCode = function() {
-        const text = document.getElementById('code-output').innerText;
-        navigator.clipboard.writeText(text).then(() => alert("Kode berhasil disalin!"));
+        var text = document.getElementById('code-output').innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            alert("Kode berhasil disalin!");
+        });
     };
 </script>
 </body>

@@ -368,7 +368,7 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEbaSulQ6MWJk33cWmBAs8EPsN-xqoX2rpqZPnTQCl32cbFC7gfpQfE4xtxOdo2kDz/exec";
     const DEADLINE = null;
     
-    let START_TIME, timeRemaining = 300, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;
+    let START_TIME, timeRemaining = 900, verifiedID = "", verifiedName = "", isSubmitted = false, daftarPeserta = [], countdown, livePolling;
 
     window.onload = function() {
         if (DEADLINE && Date.now() > DEADLINE) {
@@ -487,7 +487,7 @@
         document.getElementById("timer-display").style.display = "none";
         document.getElementById("result").style.display = "block";
         document.getElementById("final-score").innerText = score;
-        document.getElementById("duration-info").innerText = "⏱️ Waktu penyelesaian: " + durationSeconds + " detik";
+        document.getElementById("duration-info").innerText = "⏱️ Durasi: " + durationSeconds + " detik";
         
         document.getElementById("history-content").innerText = historyStr.trim();
 
@@ -534,7 +534,7 @@
             html += "<td>" + (p.noPeserta || "-") + "</td>";
             html += "<td>" + p.nama + "</td>";
             html += "<td style='color:#2563eb; font-weight:bold;'>" + p.skor + "</td>";
-            html += "<td>" + p.durasi + " detik</td>";
+            html += "<td>" + p.durasi + "s</td>";
             html += "</tr>";
         });
 
